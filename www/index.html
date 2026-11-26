@@ -2,6 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -80,6 +83,39 @@
     .anim-up { animation: slideUp 0.2s cubic-bezier(.16,1,.3,1) forwards; }
     .line-clamp-2 {
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    @keyframes bsDanmakuRun {
+      from { transform: translateX(105vw); }
+      to { transform: translateX(-110%); }
+    }
+    .bs-dm-item {
+      position: absolute;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 14px;
+      color: #FFFFFF;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.92), 0 0 2px #000;
+      pointer-events: none;
+      will-change: transform;
+      animation: bsDanmakuRun 9.5s linear forwards;
+    }
+    .bs-seek-wrap { position: relative; flex: 1; height: 22px; display: flex; align-items: center; }
+    .bs-seek-track { position: relative; width: 100%; height: 3px; background: rgba(255,255,255,0.32); border-radius: 99px; }
+    .bs-seek-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #1BB3F5; border-radius: 99px; width: 10%; }
+    .bs-seek-thumb {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 19px; height: 15px; border-radius: 4px;
+      background: #FFFFFF; border: 2px solid #1BB3F5;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.7);
+      display: flex; align-items: center; justify-content: center; gap: 2.5px;
+      pointer-events: none; left: 10%;
+    }
+    .bs-seek-thumb::before, .bs-seek-thumb::after {
+      content: ""; width: 2.5px; height: 4px; border-radius: 99px; background: #18191C;
+    }
+    .bs-seek-input {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; cursor: pointer; margin: 0; z-index: 5;
     }
   </style>
 </head>
@@ -465,72 +501,163 @@
   </div>
 
   <!-- =======================================================================
-       100% FULLSCREEN NETFLIX CINEMA OVERLAY (SAAT KLIK LAYAR PENUH!)
-       Pencahayaan Vertikal, Pangkas, Kecepatan, Kunci/Buka Kunci, Episode,
-       Audio & Subtitle (.ass/.srt/.vtt + Upload), Eps. Berikutnya
+       100% FULLSCREEN BSTATION-STYLE VIDEO PLAYER (PERSIS 6 GAMBAR REFERENSI!)
+       Top Bar (Back, E X - Judul, Speed, HD, CC, 3-Dots) + Live Danmaku +
+       Center (-10s, Pause/Play, +10s) + Cyan TV-Mascot Seekbar +
+       Bottom Bar (Lock, Like, Save, Share, Danmaku Toggle + Input, EP, Selanjutnya)
+       + Right Translucent Drawers (Semua Episode, Kualitas, Subtitle, Selebihnya, Kecepatan)
        ======================================================================= -->
-  <div id="fsCinemaOverlay" class="hidden fixed inset-0 z-[90] bg-black text-white flex flex-col justify-between select-none">
-    <!-- Fullscreen Media Host (watchVideo / watchIframe moves here dynamically) -->
+  <div id="fsCinemaOverlay" class="hidden fixed inset-0 z-[90] bg-black text-white flex flex-col justify-between select-none overflow-hidden" oncontextmenu="return false;">
+    <!-- Fullscreen Media Host (watchVideo / watchIframe / watchDemoWrap moves here seamlessly) -->
     <div id="fsMediaSlot" class="absolute inset-0 w-full h-full bg-black flex items-center justify-center overflow-hidden" onclick="toggleFsHud()"></div>
     <div id="fsDimmer" class="pointer-events-none absolute inset-0 bg-black z-10" style="opacity:0;"></div>
 
-    <!-- Dual Subtitle Fullscreen -->
-    <div id="fsSubOverlay" class="pointer-events-none absolute left-6 right-6 bottom-20 z-20 flex flex-col items-center gap-1.5 text-center">
-      <div id="fsSubAr" dir="rtl" class="font-arabic font-bold text-amber-300 bg-black/80 px-3.5 py-1 rounded-lg text-lg max-w-[92%]" style="display:none;"></div>
-      <div id="fsSubId" class="font-sans font-semibold text-white bg-black/80 px-3.5 py-1 rounded-lg text-sm max-w-[92%]" style="display:none;"></div>
+    <!-- Live Floating Danmaku Layer (Top half of video) -->
+    <div id="fsDanmakuLayer" class="pointer-events-none absolute inset-x-0 top-10 bottom-[42%] z-20 overflow-hidden"></div>
+
+    <!-- Subtle Top-Right Watermark (Persis gambar 1 & 2) -->
+    <div class="pointer-events-none absolute top-11 right-5 z-20 text-right opacity-45">
+      <p class="text-[11px] font-bold text-white leading-tight">📺 Animedubar</p>
+      <p class="text-[9.5px] text-white/85">Hak Cipta Premium</p>
+    </div>
+
+    <!-- Dual Subtitle Overlay -->
+    <div id="fsSubOverlay" class="pointer-events-none absolute left-8 right-8 bottom-[78px] z-20 flex flex-col items-center gap-1 text-center">
+      <div id="fsSubAr" dir="rtl" class="font-arabic font-bold text-amber-300 bg-black/75 px-3 py-0.5 rounded text-base sm:text-lg max-w-[90%]" style="display:none;"></div>
+      <div id="fsSubId" class="font-sans font-semibold text-white bg-black/75 px-3 py-0.5 rounded text-xs sm:text-sm max-w-[90%]" style="display:none;"></div>
     </div>
 
     <!-- Screen Lock Overlay -->
-    <div id="fsLockOverlay" class="hidden absolute inset-0 z-50 bg-black/15 flex flex-col items-center justify-end pb-8" onclick="showFsUnlockBtn()">
-      <div class="px-5 py-2 rounded-full bg-black/85 border border-white/25 text-xs font-bold">🔒 Layar Terkunci — Ketuk untuk Buka</div>
-      <button type="button" id="fsUnlockBtn" onclick="event.stopPropagation(); toggleFsLock(false);" class="hidden mt-2.5 px-6 py-2 rounded-full bg-white text-black font-extrabold text-xs">🔓 Buka Kunci Kontrol?</button>
+    <div id="fsLockOverlay" class="hidden absolute inset-0 z-50 bg-transparent flex items-center justify-start pl-6" onclick="showFsUnlockBtn()">
+      <button type="button" id="fsUnlockBtn" onclick="event.stopPropagation(); toggleFsLock(false);" class="hidden px-4 py-2.5 rounded-full bg-black/80 border border-white/25 text-white font-bold text-xs flex items-center gap-2 shadow-2xl">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        <span>Buka Kunci Layar</span>
+      </button>
     </div>
 
-    <!-- Auto-Hiding Fullscreen Netflix HUD -->
-    <div id="fsHud" class="relative z-30 flex-1 bg-gradient-to-b from-black/80 via-transparent to-black/90 flex flex-col justify-between p-4 sm:p-6 transition-opacity duration-300">
-      <div class="flex items-center justify-between gap-3">
-        <button type="button" onclick="closeFullscreenCinema()" class="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center text-xl font-bold">←</button>
-        <div class="flex-1 text-center min-w-0 px-2">
-          <p id="fsTitle" class="text-sm font-extrabold truncate">-</p>
-          <p id="fsSubTitle" class="text-[11px] text-zinc-300 truncate">-</p>
+    <!-- AUTO-HIDING BSTATION FULLSCREEN HUD -->
+    <div id="fsHud" class="relative z-30 flex-1 bg-gradient-to-b from-black/75 via-transparent to-black/85 flex flex-col justify-between px-4 sm:px-6 py-3 sm:py-4 transition-opacity duration-300">
+
+      <!-- TOP BAR: Left (Back + E X - Judul) | Right (Speed, HD, CC, More) -->
+      <div class="flex items-center justify-between gap-3" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" onclick="closeFullscreenCinema()" class="w-9 h-9 flex items-center justify-center text-white hover:bg-white/10 rounded-full shrink-0" title="Kembali">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m0 0l6 6m-6-6l6-6"/></svg>
+          </button>
+          <p id="fsTitle" class="text-[15px] sm:text-[17px] font-semibold text-white truncate">E 1 - Judul Episode</p>
         </div>
-        <button type="button" onclick="closeFullscreenCinema()" class="px-3 py-1.5 rounded-full bg-white/15 text-[11px] font-bold">Keluar FS</button>
+
+        <div class="flex items-center gap-3.5 sm:gap-5 shrink-0">
+          <!-- Speedometer Icon -->
+          <button type="button" onclick="openFsDrawer('speed')" class="w-8 h-8 flex items-center justify-center text-white hover:text-[#1BB3F5] transition" title="Kecepatan">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 12l4-3.5M12 7v1.5"/></svg>
+          </button>
+          <!-- [HD] Quality Icon -->
+          <button type="button" onclick="openFsDrawer('quality')" class="px-1.5 py-0.5 rounded-[4px] border-[1.8px] border-white text-[10px] font-black tracking-tight text-white hover:border-[#1BB3F5] hover:text-[#1BB3F5] transition" title="Kualitas">
+            <span id="fsTopQualBadge">HD</span>
+          </button>
+          <!-- [CC] Subtitle Icon -->
+          <button type="button" onclick="openFsDrawer('subtitle')" class="px-1.5 py-0.5 rounded-[4px] border-[1.8px] border-white text-[10px] font-black tracking-tight text-white hover:border-[#1BB3F5] hover:text-[#1BB3F5] transition" title="Subtitle">CC</button>
+          <!-- 3 Vertical Dots (Selebihnya) -->
+          <button type="button" onclick="openFsDrawer('more')" class="w-8 h-8 flex items-center justify-center text-white hover:text-[#1BB3F5] transition" title="Selebihnya">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          </button>
+        </div>
       </div>
 
-      <div class="relative flex-1 flex items-center justify-center">
-        <!-- Vertical Brightness Bar -->
-        <div class="absolute left-1 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 bg-black/55 px-2 py-2.5 rounded-2xl border border-white/15">
-          <span class="text-xs">☀️</span>
-          <input id="fsBrightInput" type="range" min="30" max="150" value="100" oninput="setFsBrightness(this.value)" class="h-24 accent-white" style="writing-mode:vertical-lr; direction:rtl; width:16px;" />
-          <span id="fsBrightLbl" class="text-[9px] font-mono">100%</span>
-        </div>
+      <!-- CENTER CONTROLS: -10s | Big Clean Pause/Play | +10s -->
+      <div class="flex-1 flex items-center justify-center" onclick="toggleFsHud()">
+        <div id="fsCenterBtns" class="flex items-center gap-14 sm:gap-24" onclick="event.stopPropagation()">
+          <!-- Rewind 10s -->
+          <button type="button" onclick="skipWatchSeconds(-10)" class="w-12 h-12 flex items-center justify-center text-white/95 active:scale-90 transition" title="Mundur 10 detik">
+            <svg class="w-11 h-11" viewBox="0 0 48 48" fill="none">
+              <path d="M24 10a14 14 0 1 1-11.2 5.6" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M24 5l-5.5 5 5.5 5V5z" fill="white"/>
+              <text x="24" y="29" text-anchor="middle" fill="white" font-size="12" font-weight="700" font-family="Inter,sans-serif">10</text>
+            </svg>
+          </button>
 
-        <div id="fsCenterBtns" class="flex items-center gap-10">
-          <button type="button" onclick="skipWatchSeconds(-10)" class="w-12 h-12 rounded-full bg-black/50 flex flex-col items-center justify-center"><span class="text-lg leading-none">↺</span><span class="text-[9px] font-bold">10</span></button>
-          <button type="button" id="fsBigPlayBtn" onclick="toggleWatchPlay()" class="w-16 h-16 rounded-full bg-black/65 border-2 border-white flex items-center justify-center text-2xl">❚❚</button>
-          <button type="button" onclick="skipWatchSeconds(10)" class="w-12 h-12 rounded-full bg-black/50 flex flex-col items-center justify-center"><span class="text-lg leading-none">↻</span><span class="text-[9px] font-bold">10</span></button>
+          <!-- Big Pause / Play Icon -->
+          <button type="button" id="fsBigPlayBtn" onclick="toggleWatchPlay()" class="w-16 h-16 flex items-center justify-center text-white active:scale-90 transition" title="Putar / Jeda">
+            <svg class="w-11 h-11 fill-white" viewBox="0 0 36 36"><rect x="8" y="6" width="6.5" height="24" rx="2"/><rect x="21.5" y="6" width="6.5" height="24" rx="2"/></svg>
+          </button>
+
+          <!-- Forward 10s -->
+          <button type="button" onclick="skipWatchSeconds(10)" class="w-12 h-12 flex items-center justify-center text-white/95 active:scale-90 transition" title="Maju 10 detik">
+            <svg class="w-11 h-11" viewBox="0 0 48 48" fill="none">
+              <path d="M24 10a14 14 0 1 0 11.2 5.6" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M24 5l5.5 5-5.5 5V5z" fill="white"/>
+              <text x="24" y="29" text-anchor="middle" fill="white" font-size="12" font-weight="700" font-family="Inter,sans-serif">10</text>
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div class="space-y-2.5">
+      <!-- BOTTOM CONTROLS: Cyan TV-Mascot Seekbar + Action Row -->
+      <div class="space-y-2.5" onclick="event.stopPropagation()">
+        <!-- Row 1: Current Time — Cyan Track with Cute TV Thumb — Total Time -->
         <div class="flex items-center gap-3">
-          <input id="fsSeekBar" type="range" min="0" max="100" step="0.1" value="8" oninput="seekWatchPercent(this.value)" class="flex-1 accent-[#E50914] h-1.5" />
-          <span id="fsTimeLbl" class="text-xs font-mono shrink-0">-21:00</span>
+          <span id="fsCurTimeLbl" class="text-[12px] font-medium text-white/95 tabular-nums shrink-0 min-w-[38px]">00:54</span>
+          <div class="bs-seek-wrap">
+            <div class="bs-seek-track">
+              <div id="fsSeekFill" class="bs-seek-fill"></div>
+              <div id="fsSeekThumb" class="bs-seek-thumb"></div>
+            </div>
+            <input id="fsSeekBar" type="range" min="0" max="100" step="0.1" value="8" oninput="seekWatchPercent(this.value)" class="bs-seek-input" />
+          </div>
+          <span id="fsTotTimeLbl" class="text-[12px] font-medium text-white/95 tabular-nums shrink-0 min-w-[38px] text-right">23:51</span>
         </div>
-        <div class="grid grid-cols-6 gap-1 text-[10px] font-bold text-center">
-          <button type="button" onclick="cycleFsCrop()" class="py-1.5 rounded-lg hover:bg-white/10">⤢ <span id="fsCropLbl">Pangkas</span></button>
-          <button type="button" onclick="openFsDrawer('speed')" class="py-1.5 rounded-lg hover:bg-white/10">⚡ <span id="fsSpeedLbl">1x</span></button>
-          <button type="button" onclick="toggleFsLock(true)" class="py-1.5 rounded-lg hover:bg-white/10">🔓 Kunci</button>
-          <button type="button" onclick="openFsDrawer('episodes')" class="py-1.5 rounded-lg hover:bg-white/10">▤ Episode</button>
-          <button type="button" onclick="openFsDrawer('audioSub')" class="py-1.5 rounded-lg hover:bg-white/10">💬 Sub/Audio</button>
-          <button type="button" onclick="playNextEpisode()" class="py-1.5 rounded-lg hover:bg-white/10">⏭ Berikutnya</button>
+
+        <!-- Row 2: Lock, Like, Save, Share, Danmaku Toggle, [Danmaku Pill Input], EP X, Selanjutnya -->
+        <div class="flex items-center justify-between gap-2 sm:gap-3">
+          <!-- Left 5 Action Icons -->
+          <div class="flex items-center gap-4 sm:gap-5 shrink-0">
+            <!-- Lock -->
+            <button type="button" onclick="toggleFsLock(true)" class="text-white hover:text-[#1BB3F5] transition" title="Kunci Layar">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path stroke-linecap="round" d="M8 11V7a4 4 0 017.5-1.9"/></svg>
+            </button>
+            <!-- Like -->
+            <button type="button" id="fsLikeBtn" onclick="toggleFsLike()" class="text-white hover:text-[#1BB3F5] transition" title="Suka">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linejoin="round" d="M7 11v9H4a1 1 0 01-1-1v-7a1 1 0 011-1h3zm0 0l3.6-6.8A1.8 1.8 0 0114 5.1V9h5.3a2 2 0 011.9 2.5l-1.5 6.5A2 2 0 0117.8 20H7"/></svg>
+            </button>
+            <!-- Bookmark / Favorit -->
+            <button type="button" id="fsFavBtn" onclick="toggleFsFav()" class="text-white hover:text-[#FB7299] transition" title="Favorit">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linejoin="round" d="M6 4h12a1 1 0 011 1v15l-7-4-7 4V5a1 1 0 011-1z"/></svg>
+            </button>
+            <!-- Share -->
+            <button type="button" onclick="shareFsCurrent()" class="text-white hover:text-[#1BB3F5] transition" title="Bagikan">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7-7 7v-4.5C8.5 14.5 5 16.5 3 20c1-6 4.5-10 11-10.5V5z"/></svg>
+            </button>
+            <!-- Danmaku Toggle Icon (Off = '-' badge, On = '✓' badge) -->
+            <button type="button" id="fsDanmakuToggleBtn" onclick="toggleFsDanmaku()" class="relative text-white hover:text-[#1BB3F5] transition" title="Danmaku On/Off">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2.5"/><path stroke-linecap="round" d="M7 10h6M7 14h4"/></svg>
+              <span id="fsDmBadge" class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-white text-black text-[9px] font-black flex items-center justify-center">−</span>
+            </button>
+          </div>
+
+          <!-- Center Danmaku Input Pill (Visible when Danmaku ON — Persis image_34bd7d.png!) -->
+          <form id="fsDanmakuForm" onsubmit="sendFsDanmaku(event)" class="hidden flex-1 max-w-sm mx-2">
+            <input id="fsDanmakuInput" type="text" maxlength="60" onfocus="clearTimeout(window.__fsHudT)" onblur="showFsHud()" placeholder="Klik untuk mengirimkan danmaku" class="w-full h-9 rounded-md bg-[#C4C6CA]/90 px-3.5 text-[12.5px] font-medium text-[#18191C] placeholder-[#4B4E54] focus:outline-none focus:bg-white" />
+          </form>
+
+          <!-- Right: EP X & Selanjutnya -->
+          <div class="flex items-center gap-4 sm:gap-5 shrink-0 text-[13px] font-semibold">
+            <button type="button" onclick="openFsDrawer('episodes')" class="flex items-center gap-1.5 text-white hover:text-[#1BB3F5] transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h12M4 17h8"/></svg>
+              <span id="fsEpLabel">EP1</span>
+            </button>
+            <button type="button" onclick="playNextEpisode()" class="flex items-center gap-1.5 text-white hover:text-[#1BB3F5] transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linejoin="round" d="M5 6l9 6-9 6V6z"/><path stroke-linecap="round" d="M18 6v12"/></svg>
+              <span>Selanjutnya</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Fullscreen Drawer (Speed / Episodes / Audio & Subtitle Upload) -->
-    <div id="fsDrawerBd" class="hidden absolute inset-0 z-40 bg-black/80 flex items-center justify-center p-4" onclick="closeFsDrawer()">
-      <div id="fsDrawerCard" class="w-full max-w-md bg-[#18191C] border border-white/15 rounded-2xl p-4 max-h-[82vh] overflow-y-auto space-y-3 text-xs" onclick="event.stopPropagation()"></div>
+    <!-- RIGHT-SIDE TRANSLUCENT BSTATION DRAWER (PERSIS GAMBAR 3, 4, 5, 6!) -->
+    <div id="fsDrawerBd" class="hidden absolute inset-0 z-40 bg-transparent flex justify-end" onclick="closeFsDrawer()">
+      <div id="fsDrawerCard" class="w-[46%] min-w-[260px] max-w-[360px] h-full bg-black/85 backdrop-blur-md border-l border-white/10 p-5 flex flex-col overflow-y-auto text-white" onclick="event.stopPropagation()"></div>
     </div>
   </div>
 
@@ -811,8 +938,9 @@
       payMethod: "QRIS",
       watch: {
         itemId: null, sIdx: 0, epIdx: 0, tab: "info", commSort: "top",
-        playing: false, demoSec: 12, demoDur: 1440, demoTimer: null,
-        hls: null, speed: 1, subMode: "dual", cropIdx: 0, isFs: false,
+        playing: false, demoSec: 54, demoDur: 1431, demoTimer: null,
+        hls: null, speed: 1, quality: "AUTO", subMode: "dual", cropIdx: 0, isFs: false,
+        danmakuOn: false, dmTimer: null, skipIntroOutro: true, bgPlay: false, brightness: 100,
         customSubs: { id: [], ar: [] }
       }
     };
@@ -1358,7 +1486,7 @@
           document.getElementById("fsSeekBar").value = pct;
           const f = s => String(Math.floor(s/60)).padStart(2,"0") + ":" + String(Math.floor(s%60)).padStart(2,"0");
           document.getElementById("watchTimeTxt").textContent = `${f(cur)}/${f(dur)}`;
-          document.getElementById("fsTimeLbl").textContent = "-" + f(Math.max(0, dur - cur));
+          updateFsSeekVisuals(pct, cur, dur);
           paintDualSubs(cur);
         };
       } else if (isDrive) {
@@ -1376,7 +1504,7 @@
           document.getElementById("fsSeekBar").value = pct;
           const f = s => String(Math.floor(s/60)).padStart(2,"0") + ":" + String(Math.floor(s%60)).padStart(2,"0");
           document.getElementById("watchTimeTxt").textContent = `${f(app.watch.demoSec)}/${f(app.watch.demoDur)}`;
-          document.getElementById("fsTimeLbl").textContent = "-" + f(app.watch.demoDur - app.watch.demoSec);
+          updateFsSeekVisuals(pct, app.watch.demoSec, app.watch.demoDur);
           paintDualSubs(app.watch.demoSec);
         }, 1000);
       }
@@ -1565,7 +1693,115 @@
       toast("Komentar terkirim!");
     }
 
-    /* ----- FULLSCREEN NETFLIX CINEMA MODE ----- */
+    /* ----- FULLSCREEN BSTATION-STYLE CINEMA MODE (PERSIS 6 GAMBAR) ----- */
+    const SAMPLE_DANMAKU = [
+      "keren 🔥", "dubbing Arab-nya jernih banget!", "akhirnya episode baru keluar",
+      "mantap animedubar!", "dual sub id + ar membantu banget", "opening-nya epic ⚔️",
+      "suuuuuuuuuu", "gokil animasinya 🗿", "lanjut nonton maraton!"
+    ];
+
+    function fmtClock(sec) {
+      const s = Math.max(0, Math.floor(sec || 0));
+      return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+    }
+
+    function updateFsSeekVisuals(pct, curSec, totSec) {
+      const p = Math.min(100, Math.max(0, Number(pct) || 0));
+      const fill = document.getElementById("fsSeekFill");
+      const thumb = document.getElementById("fsSeekThumb");
+      const curL = document.getElementById("fsCurTimeLbl");
+      const totL = document.getElementById("fsTotTimeLbl");
+      if (fill) fill.style.width = p + "%";
+      if (thumb) thumb.style.left = p + "%";
+      if (curL) curL.textContent = fmtClock(curSec);
+      if (totL) totL.textContent = fmtClock(totSec);
+    }
+
+    function syncFsActionIcons() {
+      const id = app.watch.itemId;
+      const likeBtn = document.getElementById("fsLikeBtn");
+      const favBtn = document.getElementById("fsFavBtn");
+      if (likeBtn) likeBtn.className = app.likes.includes(id) ? "text-[#1BB3F5] transition" : "text-white hover:text-[#1BB3F5] transition";
+      if (favBtn) favBtn.className = app.favorites.includes(id) ? "text-[#FB7299] transition" : "text-white hover:text-[#FB7299] transition";
+
+      const dmOn = app.watch.danmakuOn;
+      const dmBadge = document.getElementById("fsDmBadge");
+      const dmForm = document.getElementById("fsDanmakuForm");
+      if (dmBadge) {
+        dmBadge.textContent = dmOn ? "✓" : "−";
+        dmBadge.className = dmOn
+          ? "absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#1BB3F5] text-white text-[9px] font-black flex items-center justify-center"
+          : "absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-white text-black text-[9px] font-black flex items-center justify-center";
+      }
+      if (dmForm) dmForm.classList.toggle("hidden", !dmOn);
+      const dmLayer = document.getElementById("fsDanmakuLayer");
+      if (dmLayer) dmLayer.classList.toggle("hidden", !dmOn);
+    }
+
+    function spawnDanmakuLine(text, isMine = false) {
+      if (!app.watch.danmakuOn || !app.watch.isFs) return;
+      const layer = document.getElementById("fsDanmakuLayer");
+      if (!layer) return;
+      const el = document.createElement("div");
+      el.className = "bs-dm-item";
+      el.textContent = text;
+      const topPct = 6 + Math.floor(Math.random() * 68);
+      el.style.top = topPct + "%";
+      if (isMine) {
+        el.style.color = "#67E8F9";
+        el.style.border = "1px solid rgba(27,179,245,0.7)";
+        el.style.padding = "1px 8px";
+        el.style.borderRadius = "99px";
+        el.style.background = "rgba(0,0,0,0.45)";
+      }
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), 9800);
+    }
+
+    function startDanmakuEngine() {
+      clearInterval(app.watch.dmTimer);
+      if (!app.watch.danmakuOn) return;
+      spawnDanmakuLine(SAMPLE_DANMAKU[Math.floor(Math.random() * SAMPLE_DANMAKU.length)]);
+      app.watch.dmTimer = setInterval(() => {
+        if (!app.watch.isFs || !app.watch.danmakuOn || !app.watch.playing) return;
+        const pool = [...SAMPLE_DANMAKU, ...((app.comments[app.watch.itemId] || []).map(c => c.text.slice(0, 42)))];
+        spawnDanmakuLine(pool[Math.floor(Math.random() * pool.length)]);
+      }, 2600);
+    }
+
+    function toggleFsDanmaku() {
+      app.watch.danmakuOn = !app.watch.danmakuOn;
+      syncFsActionIcons();
+      if (app.watch.danmakuOn) {
+        startDanmakuEngine();
+        toast("Danmaku aktif");
+      } else {
+        clearInterval(app.watch.dmTimer);
+        const layer = document.getElementById("fsDanmakuLayer");
+        if (layer) layer.innerHTML = "";
+        toast("Danmaku disembunyikan");
+      }
+      showFsHud();
+    }
+
+    function sendFsDanmaku(e) {
+      e.preventDefault();
+      const inp = document.getElementById("fsDanmakuInput");
+      const txt = (inp && inp.value || "").trim();
+      if (!txt) return;
+      spawnDanmakuLine(txt, true);
+      inp.value = "";
+      inp.blur();
+      showFsHud();
+    }
+
+    function toggleFsLike() { toggleLike(app.watch.itemId); syncFsActionIcons(); toast(app.likes.includes(app.watch.itemId) ? "Disukai 👍" : "Batal suka"); }
+    function toggleFsFav() { toggleFavorite(app.watch.itemId); syncFsActionIcons(); }
+    function shareFsCurrent() {
+      const item = cfg.catalog.find(c => c.id === app.watch.itemId);
+      if (item) shareCurrentItem(item.title);
+    }
+
     function openFullscreenCinema() {
       const w = app.watch;
       const item = cfg.catalog.find(c => c.id === w.itemId);
@@ -1574,12 +1810,16 @@
 
       const fs = document.getElementById("fsCinemaOverlay");
       const slot = document.getElementById("fsMediaSlot");
-      // Move active media elements into fullscreen slot seamlessly without reloading stream!
       ["watchVideo", "watchIframeWrap", "watchDemoWrap"].forEach(id => slot.appendChild(document.getElementById(id)));
-      document.getElementById("fsTitle").textContent = item.title;
-      document.getElementById("fsSubTitle").textContent = `S${w.sIdx+1}:E${ep.ep} · ${ep.title}`;
+
+      document.getElementById("fsTitle").textContent = `E ${ep.ep} - ${ep.title}`;
+      document.getElementById("fsEpLabel").textContent = `EP${ep.ep}`;
+      updateFsSeekVisuals((w.demoSec / w.demoDur) * 100, w.demoSec, w.demoDur);
       w.isFs = true;
       fs.classList.remove("hidden");
+      syncFsActionIcons();
+      updateFsPlayButtonSvg();
+      if (w.danmakuOn) startDanmakuEngine();
 
       if (fs.requestFullscreen) fs.requestFullscreen().catch(()=>{});
       if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(()=>{});
@@ -1588,6 +1828,8 @@
 
     function closeFullscreenCinema() {
       if (!app.watch.isFs) return;
+      clearInterval(app.watch.dmTimer);
+      closeFsDrawer();
       const stage = document.getElementById("watchStage");
       ["watchVideo", "watchIframeWrap", "watchDemoWrap"].forEach(id => stage.prepend(document.getElementById(id)));
       app.watch.isFs = false;
@@ -1597,17 +1839,35 @@
     }
 
     function showFsHud() {
+      const lockOv = document.getElementById("fsLockOverlay");
+      if (lockOv && !lockOv.classList.contains("hidden")) return;
       const hud = document.getElementById("fsHud");
       if (!hud) return;
       hud.style.opacity = "1"; hud.style.pointerEvents = "auto";
       clearTimeout(window.__fsHudT);
-      window.__fsHudT = setTimeout(() => { hud.style.opacity = "0"; hud.style.pointerEvents = "none"; }, 3800);
+      window.__fsHudT = setTimeout(() => {
+        const dr = document.getElementById("fsDrawerBd");
+        if (!dr || dr.classList.contains("hidden")) {
+          hud.style.opacity = "0"; hud.style.pointerEvents = "none";
+        }
+      }, 4200);
     }
+
     function toggleFsHud() {
       const hud = document.getElementById("fsHud");
+      if (!hud) return;
       if (hud.style.opacity === "0") showFsHud();
       else { hud.style.opacity = "0"; hud.style.pointerEvents = "none"; }
     }
+
+    function updateFsPlayButtonSvg() {
+      const b = document.getElementById("fsBigPlayBtn");
+      if (!b) return;
+      b.innerHTML = app.watch.playing
+        ? '<svg class="w-11 h-11 fill-white" viewBox="0 0 36 36"><rect x="8" y="6" width="6.5" height="24" rx="2"/><rect x="21.5" y="6" width="6.5" height="24" rx="2"/></svg>'
+        : '<svg class="w-12 h-12 fill-white ml-1" viewBox="0 0 36 36"><path d="M10 6.5v23l19-11.5-19-11.5z"/></svg>';
+    }
+
     function toggleWatchPlay() {
       const v = document.getElementById("watchVideo");
       if (!v.classList.contains("hidden")) {
@@ -1616,73 +1876,189 @@
       } else {
         app.watch.playing = !app.watch.playing;
       }
-      const sym = app.watch.playing ? "❚❚" : "▶";
-      document.getElementById("watchInlinePlayBtn").textContent = sym;
-      document.getElementById("fsBigPlayBtn").textContent = sym;
+      document.getElementById("watchInlinePlayBtn").textContent = app.watch.playing ? "❚❚" : "▶";
+      updateFsPlayButtonSvg();
+      showFsHud();
     }
+
     function skipWatchSeconds(d) {
       const v = document.getElementById("watchVideo");
-      if (!v.classList.contains("hidden") && v.duration) v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d));
-      else { app.watch.demoSec = Math.min(app.watch.demoDur, Math.max(0, app.watch.demoSec + d)); paintDualSubs(app.watch.demoSec); }
+      if (!v.classList.contains("hidden") && v.duration) {
+        v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d));
+        updateFsSeekVisuals((v.currentTime / v.duration) * 100, v.currentTime, v.duration);
+      } else {
+        app.watch.demoSec = Math.min(app.watch.demoDur, Math.max(0, app.watch.demoSec + d));
+        updateFsSeekVisuals((app.watch.demoSec / app.watch.demoDur) * 100, app.watch.demoSec, app.watch.demoDur);
+        paintDualSubs(app.watch.demoSec);
+      }
       toast(d < 0 ? "↺ -10 detik" : "+10 detik ↻");
+      showFsHud();
     }
+
     function seekWatchPercent(p) {
+      const pct = Number(p) || 0;
       const v = document.getElementById("watchVideo");
-      if (!v.classList.contains("hidden") && v.duration) v.currentTime = (Number(p)/100)*v.duration;
-      else { app.watch.demoSec = (Number(p)/100)*app.watch.demoDur; paintDualSubs(app.watch.demoSec); }
+      if (!v.classList.contains("hidden") && v.duration) {
+        v.currentTime = (pct / 100) * v.duration;
+        updateFsSeekVisuals(pct, v.currentTime, v.duration);
+      } else {
+        app.watch.demoSec = (pct / 100) * app.watch.demoDur;
+        updateFsSeekVisuals(pct, app.watch.demoSec, app.watch.demoDur);
+        paintDualSubs(app.watch.demoSec);
+      }
     }
+
     function setFsBrightness(val) {
       const b = Number(val) || 100;
-      document.getElementById("fsBrightLbl").textContent = b + "%";
-      document.getElementById("watchVideo").style.filter = `brightness(${b/100})`;
-      document.getElementById("fsDimmer").style.opacity = b < 100 ? String((100 - b) / 130) : "0";
-    }
-    function cycleFsCrop() {
-      const modes = [["object-contain","Asli"],["object-cover","Penuh"],["object-fill","Stretch"]];
-      app.watch.cropIdx = (app.watch.cropIdx + 1) % modes.length;
+      app.watch.brightness = b;
       const v = document.getElementById("watchVideo");
-      v.classList.remove("object-contain","object-cover","object-fill");
-      v.classList.add(modes[app.watch.cropIdx][0]);
-      document.getElementById("watchIframe").style.transform = app.watch.cropIdx === 1 ? "scale(1.12)" : "scale(1)";
-      document.getElementById("fsCropLbl").textContent = modes[app.watch.cropIdx][1];
-      toast("Rasio: " + modes[app.watch.cropIdx][1]);
+      if (v) v.style.filter = `brightness(${b/100})`;
+      const d = document.getElementById("fsDimmer");
+      if (d) d.style.opacity = b < 100 ? String((100 - b) / 130) : "0";
     }
+
+    function setFsQuality(q) {
+      if (q === "720P" && !hasVip()) { closeFsDrawer(); openVipSheet(); toast("Kualitas 720P / 1080P khusus Member Premium!"); return; }
+      app.watch.quality = q;
+      const b = document.getElementById("fsTopQualBadge");
+      if (b) b.textContent = (q === "720P" || q === "1080P" || q === "AUTO") ? "HD" : q.replace("P","");
+      if (app.watch.hls) {
+        if (q === "AUTO") app.watch.hls.currentLevel = -1;
+        else {
+          const h = parseInt(q, 10);
+          const idx = (app.watch.hls.levels || []).findIndex(l => l.height === h);
+          if (idx !== -1) app.watch.hls.currentLevel = idx;
+        }
+      }
+      toast("Kualitas diatur ke " + (q === "AUTO" ? "Otomatis (360P)" : q));
+      openFsDrawer("quality");
+    }
+
     function toggleFsLock(lock) {
-      document.getElementById("fsLockOverlay").classList.toggle("hidden", !lock);
-      document.getElementById("fsUnlockBtn").classList.add("hidden");
+      const ov = document.getElementById("fsLockOverlay");
+      const hud = document.getElementById("fsHud");
+      if (ov) ov.classList.toggle("hidden", !lock);
+      if (hud) { hud.style.opacity = lock ? "0" : "1"; hud.style.pointerEvents = lock ? "none" : "auto"; }
+      const b = document.getElementById("fsUnlockBtn");
+      if (b) b.classList.add("hidden");
+      if (!lock) showFsHud();
     }
+
     function showFsUnlockBtn() {
       const b = document.getElementById("fsUnlockBtn");
+      if (!b) return;
       b.classList.remove("hidden");
       clearTimeout(window.__fsUnl);
       window.__fsUnl = setTimeout(() => b.classList.add("hidden"), 2800);
     }
+
     function openFsDrawer(type) {
       clearTimeout(window.__fsHudT);
+      const hud = document.getElementById("fsHud");
+      if (hud) { hud.style.opacity = "0"; hud.style.pointerEvents = "none"; }
       const card = document.getElementById("fsDrawerCard");
       const item = cfg.catalog.find(c => c.id === app.watch.itemId);
-      if (type === "speed") {
-        card.innerHTML = `<p class="font-extrabold text-sm">Kecepatan Putar</p><div class="grid grid-cols-3 gap-2">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button type="button" onclick="app.watch.speed=${s}; document.getElementById('watchVideo').playbackRate=${s}; document.getElementById('fsSpeedLbl').textContent='${s}x'; closeFsDrawer();" class="py-2.5 rounded-xl font-bold ${app.watch.speed===s?"bg-white text-black":"bg-white/10 text-white"}">${s}x</button>`).join("")}</div>`;
-      } else if (type === "episodes" && item) {
+      const hdr = (t) => `<div class="flex items-center justify-between mb-5"><span class="w-6"></span><h4 class="text-[15px] font-bold text-zinc-200">${t}</h4><button type="button" onclick="closeFsDrawer()" class="w-6 h-6 text-zinc-300 hover:text-white text-lg leading-none">✕</button></div>`;
+
+      if (type === "episodes" && item) {
+        // PERSIS GAMBAR image_34bd9a.jpg
         const eps = item.seasons[app.watch.sIdx].episodes || [];
-        card.innerHTML = `<p class="font-extrabold text-sm">Daftar Episode</p><div class="space-y-2">${eps.map((ep, idx)=>`<button type="button" onclick="closeFsDrawer(); openWatchScreen('${esc(item.id)}', ${app.watch.sIdx}, ${idx}); openFullscreenCinema();" class="w-full text-left p-2.5 rounded-xl ${idx===app.watch.epIdx?"bg-bsBlue text-white":"bg-white/10 text-zinc-200"} font-bold">Eps ${ep.ep}: ${esc(ep.title)}</button>`).join("")}</div>`;
-      } else if (type === "audioSub") {
-        card.innerHTML = `<p class="font-extrabold text-sm">Dual Subtitle (.ass/.srt/.vtt)</p>
-          <div class="grid grid-cols-2 gap-2">${[["dual","Dual (ID+AR)"],["id","Indo Saja"],["ar","Arab Saja"],["off","Nonaktif"]].map(([k,l])=>`<button type="button" onclick="app.watch.subMode='${k}'; paintDualSubs(app.watch.demoSec); closeFsDrawer();" class="py-2 rounded-xl font-bold ${app.watch.subMode===k?"bg-bsBlue text-white":"bg-white/10 text-zinc-200"}">${l}</button>`).join("")}</div>
-          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
-            <label class="py-2 rounded-xl bg-white/15 text-center font-bold cursor-pointer">📤 Upload Sub ID<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'id')" class="hidden"/></label>
-            <label class="py-2 rounded-xl bg-amber-500/25 text-amber-300 text-center font-bold cursor-pointer">📤 Upload Sub AR<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'ar')" class="hidden"/></label>
+        card.innerHTML = hdr("Semua episode") + `
+          <div class="grid grid-cols-4 gap-2.5">
+            ${eps.map((ep, idx) => {
+              const act = idx === app.watch.epIdx;
+              const vip = item.isVip || ep.isVip;
+              return `<button type="button" onclick="closeFsDrawer(); openWatchScreen('${esc(item.id)}', ${app.watch.sIdx}, ${idx}); openFullscreenCinema();" class="relative h-14 rounded-lg font-bold text-[15px] flex items-center justify-center transition ${act ? "bg-[#0F3347]/90 text-[#1BB3F5] border border-[#1BB3F5]/40" : "bg-white/10 hover:bg-white/20 text-zinc-100"}">
+                <span>${ep.ep}</span>
+                ${vip ? `<span class="absolute top-1 right-1 w-4 h-4 rounded bg-[#FB7299] text-white text-[9px] flex items-center justify-center">💎</span>` : ""}
+              </button>`;
+            }).join("")}
+            <button type="button" onclick="toast('Preview PV tersedia di halaman detail.'); closeFsDrawer();" class="h-14 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-200 font-bold text-[14px] flex items-center justify-center">PV</button>
+          </div>`;
+      } else if (type === "quality") {
+        // PERSIS GAMBAR image_34bdb9.jpg
+        const opts = [
+          { k: "720P", lbl: "720P", prem: true },
+          { k: "480P", lbl: "480P", prem: false },
+          { k: "360P", lbl: "360P", prem: false },
+          { k: "240P", lbl: "240P", prem: false },
+          { k: "144P", lbl: "144P", prem: false },
+          { k: "AUTO", lbl: "Otomatis (360P)", prem: false }
+        ];
+        card.innerHTML = hdr("Kualitas") + `
+          <div class="flex flex-col gap-1 -mx-5">
+            ${opts.map(o => {
+              const act = app.watch.quality === o.k;
+              return `<button type="button" onclick="setFsQuality('${o.k}')" class="w-full px-6 py-3.5 flex items-center justify-between text-[14px] font-medium transition ${act ? "bg-white/15 text-white font-bold" : "text-zinc-200 hover:bg-white/10"}">
+                <span>${o.lbl}</span>
+                ${o.prem ? `<span class="px-2 py-0.5 rounded bg-[#FB7299] text-white text-[10.5px] font-extrabold inline-flex items-center gap-1">💎 Premium</span>` : ""}
+              </button>`;
+            }).join("")}
+          </div>`;
+      } else if (type === "subtitle") {
+        // PERSIS GAMBAR image_34bdd5.jpg
+        const subs = [
+          ["dual", "Dual Subtitle (ID + AR)"],
+          ["id", "Bahasa Indonesia"],
+          ["ar", "العربية (Arab)"],
+          ["off", "Nonaktif"]
+        ];
+        card.innerHTML = hdr("Subtitle") + `
+          <div class="flex-1 flex flex-col items-center gap-2">
+            ${subs.map(([k, l]) => `<button type="button" onclick="app.watch.subMode='${k}'; paintDualSubs(app.watch.demoSec); openFsDrawer('subtitle');" class="w-full py-3 rounded-lg text-center text-[14.5px] transition ${app.watch.subMode===k ? "text-[#1BB3F5] font-extrabold bg-white/10" : "text-zinc-200 hover:bg-white/5"}">${l}</button>`).join("")}
+            <div class="w-full grid grid-cols-2 gap-2 pt-3 mt-2 border-t border-white/10 text-[11px]">
+              <label class="py-2 rounded-lg bg-white/10 hover:bg-white/20 text-center font-bold cursor-pointer">📤 + Sub ID<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'id')" class="hidden"/></label>
+              <label class="py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-center font-bold cursor-pointer">📤 + Sub AR<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'ar')" class="hidden"/></label>
+            </div>
+          </div>
+          <button type="button" onclick="openWhatsAppAdmin('Halo Admin Animedubar, saya ingin request tambahan bahasa subtitle.');" class="mt-auto pt-4 text-center text-[12px] text-zinc-400 underline">Kurangnya macam bahasa</button>`;
+      } else if (type === "more") {
+        // PERSIS GAMBAR image_34c07d.jpg
+        const sk = app.watch.skipIntroOutro;
+        const bg = app.watch.bgPlay;
+        card.innerHTML = hdr("Selebihnya") + `
+          <div class="space-y-4 text-[13.5px]">
+            <button type="button" onclick="app.watch.skipIntroOutro=!app.watch.skipIntroOutro; openFsDrawer('more'); toast(app.watch.skipIntroOutro?'Loncati awalan & akhiran aktif':'Nonaktif');" class="w-full flex items-center justify-between gap-3 py-1">
+              <span class="flex items-center gap-3 text-zinc-100"><span>↻</span><span>Loncati awalan dan akhiran</span></span>
+              <span class="w-11 h-6 rounded-full p-0.5 transition flex items-center ${sk ? "bg-[#1BB3F5] justify-end" : "bg-zinc-600 justify-start"}"><span class="w-5 h-5 rounded-full bg-white shadow"></span></span>
+            </button>
+            <button type="button" onclick="app.watch.bgPlay=!app.watch.bgPlay; openFsDrawer('more'); toast(app.watch.bgPlay?'Putar di latar belakang aktif':'Nonaktif');" class="w-full flex items-center justify-between gap-3 py-1">
+              <span class="flex items-center gap-3 text-zinc-100"><span>🎧</span><span>Putar di latar belakang</span></span>
+              <span class="w-11 h-6 rounded-full p-0.5 transition flex items-center ${bg ? "bg-[#1BB3F5] justify-end" : "bg-zinc-600 justify-start"}"><span class="w-5 h-5 rounded-full bg-white shadow"></span></span>
+            </button>
+            <button type="button" onclick="openFsDrawer('subtitle')" class="w-full flex items-center gap-3 py-1.5 text-zinc-100 hover:text-[#1BB3F5]">
+              <span class="px-1 rounded border border-zinc-300 text-[9px] font-black">CC</span><span>Subtitle Feedback</span>
+            </button>
+            <button type="button" onclick="openWhatsAppAdmin('Halo Admin Animedubar, saya ingin kirim Feedback Pemutaran untuk video ini.');" class="w-full flex items-center gap-3 py-1.5 text-zinc-100 hover:text-[#1BB3F5]">
+              <span class="px-1 rounded border border-zinc-300 text-[9px] font-black">▶</span><span>Feedback Pemutaran</span>
+            </button>
+            <div class="pt-3 border-t border-white/10 space-y-2 text-[11.5px] text-zinc-300">
+              <div class="flex items-center justify-between"><span>☀️ Pencahayaan</span><span>${app.watch.brightness}%</span></div>
+              <input type="range" min="30" max="150" value="${app.watch.brightness}" oninput="setFsBrightness(this.value)" class="w-full accent-[#1BB3F5]" />
+            </div>
+          </div>`;
+      } else if (type === "speed") {
+        card.innerHTML = hdr("Kecepatan") + `
+          <div class="flex flex-col gap-1 -mx-5">
+            ${[0.5, 0.75, 1, 1.25, 1.5, 2].map(s => `<button type="button" onclick="app.watch.speed=${s}; document.getElementById('watchVideo').playbackRate=${s}; toast('Kecepatan: ${s}x'); closeFsDrawer();" class="w-full px-6 py-3 text-center text-[14.5px] transition ${app.watch.speed===s ? "bg-white/15 text-[#1BB3F5] font-extrabold" : "text-zinc-200 hover:bg-white/10"}">${s}x${s===1 ? " (Normal)" : ""}</button>`).join("")}
           </div>`;
       }
       document.getElementById("fsDrawerBd").classList.remove("hidden");
     }
-    function closeFsDrawer() { document.getElementById("fsDrawerBd").classList.add("hidden"); showFsHud(); }
+
+    function closeFsDrawer() {
+      const bd = document.getElementById("fsDrawerBd");
+      if (bd) bd.classList.add("hidden");
+      showFsHud();
+    }
+
     function uploadLocalSub(evt, lang) {
       const f = evt.target.files && evt.target.files[0]; if (!f) return;
       const r = new FileReader();
       r.onload = () => { app.watch.customSubs[lang] = parseUniversalSub(r.result, f.name); toast(`Subtitle ${lang.toUpperCase()} dimuat!`); closeFsDrawer(); };
       r.readAsText(f, "UTF-8");
     }
+
     function playNextEpisode() {
       const item = cfg.catalog.find(c => c.id === app.watch.itemId);
       const eps = item && item.seasons[app.watch.sIdx] && item.seasons[app.watch.sIdx].episodes;
