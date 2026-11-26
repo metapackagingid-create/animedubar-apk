@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Animedubar — Anime &amp; Film Dubbing Arab</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bsBlue: '#1BB3F5',
+            bsBlueDark: '#00AEEC',
+            bsPink: '#FB7299',
+            bsInk: '#18191C',
+            bsMuted: '#61666D',
+            bsSub: '#9499A0',
+            bsBg: '#F4F5F7',
+            bsDark: '#2A2A2D',
+            nfRed: '#E50914'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            arabic: ['Cairo', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      background: #FFFFFF;
+      color: #18191C;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overscroll-behavior-y: contain;
+      user-select: none;
+    }
+    .font-arabic { font-family: 'Cairo', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .safe-top { padding-top: max(10px, env(safe-area-inset-top)); }
+    .safe-bottom { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .bs-tab-curve {
+      width: 24px; height: 4px; border-radius: 99px;
+      background: #1BB3F5;
+      margin: 3px auto 0;
+    }
+    .bs-comic-premium {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #FF7CA8 0%, #FB7299 100%);
+      color: #FFFFFF;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 2px solid #18191C;
+      box-shadow: 0 2px 0 #18191C;
+      letter-spacing: -0.02em;
+    }
+    .bs-profile-banner {
+      background: linear-gradient(180deg, #CFE8FF 0%, #E7F4FF 68%, #FFFFFF 100%);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(24px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .anim-up { animation: slideUp 0.2s cubic-bezier(.16,1,.3,1) forwards; }
+    .line-clamp-2 {
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-white text-[#18191C] min-h-screen">
+
+  <!-- =======================================================================
+       APP SHELL (MAX-WIDTH MOBILE FRAME ON DESKTOP, EDGE-TO-EDGE ON PHONE/APK)
+       ======================================================================= -->
+  <div id="appRoot" class="max-w-[520px] mx-auto min-h-screen bg-white relative flex flex-col pb-[70px]">
+
+    <!-- ===================================================================
+         SCREEN 1: HOMEPAGE (PERSIS GAMBAR image_8ee17b.jpg)
+         =================================================================== -->
+    <section id="view-home" class="app-view flex-1 flex flex-col">
+      <!-- Sticky Top Search Bar + Category Tabs -->
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md safe-top border-b border-gray-100">
+        <div class="px-3.5 pt-1 pb-2">
+          <button type="button" onclick="openSearchFromBar()" class="w-full h-10 rounded-full border-[1.4px] border-[#222] bg-white px-4 flex items-center gap-2.5 text-left active:bg-gray-50">
+            <svg class="w-4 h-4 text-[#61666D] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path stroke-linecap="round" d="m20 20-3.8-3.8"/></svg>
+            <span id="homeSearchPlaceholder" class="text-[14px] text-[#9499A0] truncate">Detective Conan (Dub Arab)</span>
+          </button>
+        </div>
+        <div id="homeTopTabs" class="flex items-center gap-5 px-4 pt-1 pb-2 overflow-x-auto no-scrollbar text-[15px]">
+          <button type="button" data-htab="ikuti" onclick="setHomeTab('ikuti')" class="htab-btn shrink-0 text-[#61666D] font-semibold">Ikuti</button>
+          <button type="button" data-htab="untukAnda" onclick="setHomeTab('untukAnda')" class="htab-btn shrink-0 text-[#18191C] font-extrabold relative">
+            <span>Untuk Anda</span>
+            <div class="bs-tab-curve"></div>
+          </button>
+          <button type="button" data-htab="anime" onclick="setHomeTab('anime')" class="htab-btn shrink-0 text-[#61666D] font-semibold">Anime</button>
+          <button type="button" data-htab="movie" onclick="setHomeTab('movie')" class="htab-btn shrink-0 text-[#61666D] font-semibold">Film Arab</button>
+          <button type="button" data-htab="sorotan" onclick="setHomeTab('sorotan')" class="htab-btn shrink-0 text-[#61666D] font-semibold">Sorotan</button>
+        </div>
+      </header>
+
+      <!-- Feed List (16:9 Large Cards + "Anime >" Row) -->
+      <main id="homeFeedContainer" class="flex-1 px-3.5 pt-3 pb-6 space-y-5"></main>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 2: CARI (PERSIS GAMBAR image_8ee157.jpg & image_8ee174.jpg)
+         =================================================================== -->
+    <section id="view-search" class="app-view hidden flex-1 flex flex-col">
+      <header class="sticky top-0 z-30 bg-white safe-top px-3.5 pt-1 pb-2.5">
+        <div class="flex items-center gap-2.5">
+          <button type="button" id="searchBackBtn" onclick="switchNavTab('home')" class="hidden w-8 h-8 flex items-center justify-center text-[#18191C] shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="flex-1 h-10 rounded-full border-[1.4px] border-[#222] bg-white px-3.5 flex items-center gap-2">
+            <svg class="w-4 h-4 text-[#61666D] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path stroke-linecap="round" d="m20 20-3.8-3.8"/></svg>
+            <input id="searchInput" type="text" oninput="renderSearchScreen()" placeholder="Cari anime, film dub Arab..." class="w-full bg-transparent text-[14px] text-[#18191C] placeholder-[#9499A0] focus:outline-none" />
+            <button type="button" id="searchClearBtn" onclick="document.getElementById('searchInput').value=''; renderSearchScreen();" class="hidden text-[#9499A0] text-sm font-bold px-1">✕</button>
+          </div>
+          <button type="button" id="searchGoTextBtn" onclick="renderSearchScreen()" class="hidden text-[14px] font-bold text-[#18191C] px-1 shrink-0">Cari</button>
+        </div>
+      </header>
+
+      <!-- Trending Keywords Section -->
+      <div id="trendingKeywordsWrap" class="px-4 pt-2 pb-4 bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-[16px] font-extrabold text-[#18191C]">Trending Animedubar</h2>
+          <button type="button" onclick="shuffleTrending()" class="p-1 text-[#61666D] active:rotate-180 transition duration-300" title="Segarkan Trending">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M20.49 9A9 9 0 005.64 5.64L4 7m16 10l-1.64 1.36A9 9 0 013.51 15"/></svg>
+          </button>
+        </div>
+        <div id="trendingKeywordsGrid" class="grid grid-cols-2 gap-x-4 gap-y-3 text-[13.5px]"></div>
+      </div>
+
+      <div class="h-2 bg-[#F4F5F7]"></div>
+
+      <!-- Search Sub-Tabs: Populer | Anime | Film Arab | VIP | Dual Sub -->
+      <div class="sticky top-[54px] z-20 bg-white border-b border-gray-100 px-4 flex items-center gap-6 overflow-x-auto no-scrollbar text-[15px]">
+        <button type="button" data-stab="populer" onclick="setSearchSubTab('populer')" class="stab-btn py-3 shrink-0 font-extrabold text-[#18191C] border-b-[2.5px] border-[#18191C]">Populer</button>
+        <button type="button" data-stab="anime" onclick="setSearchSubTab('anime')" class="stab-btn py-3 shrink-0 font-semibold text-[#9499A0] border-b-[2.5px] border-transparent">Anime</button>
+        <button type="button" data-stab="movie" onclick="setSearchSubTab('movie')" class="stab-btn py-3 shrink-0 font-semibold text-[#9499A0] border-b-[2.5px] border-transparent">Film Arab</button>
+        <button type="button" data-stab="vip" onclick="setSearchSubTab('vip')" class="stab-btn py-3 shrink-0 font-semibold text-[#9499A0] border-b-[2.5px] border-transparent">Premium VIP</button>
+        <button type="button" data-stab="dualsub" onclick="setSearchSubTab('dualsub')" class="stab-btn py-3 shrink-0 font-semibold text-[#9499A0] border-b-[2.5px] border-transparent">Dual Sub</button>
+      </div>
+
+      <!-- Search Results Area (Row List for Populer, 3-Col Portrait Grid for Anime!) -->
+      <div id="searchResultsBody" class="flex-1 px-3.5 py-3.5"></div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 3: PESAN / NOTIFIKASI (PERSIS GAMBAR image_8ee13b.png)
+         =================================================================== -->
+    <section id="view-messages" class="app-view hidden flex-1 flex flex-col bg-white">
+      <div class="safe-top pt-4 pb-3 px-4 border-b border-gray-100">
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <button type="button" onclick="setMsgFilter('reply')" class="flex flex-col items-center gap-2 py-1">
+            <div class="w-12 h-12 rounded-2xl bg-[#E8F7FF] flex items-center justify-center relative">
+              <svg class="w-7 h-7" viewBox="0 0 36 36" fill="none"><rect x="4" y="6" width="28" height="21" rx="10" fill="#46C5FF" stroke="#18191C" stroke-width="2"/><circle cx="13" cy="16.5" r="1.8" fill="#fff"/><circle cx="18" cy="16.5" r="1.8" fill="#fff"/><circle cx="23" cy="16.5" r="1.8" fill="#fff"/></svg>
+            </div>
+            <span class="text-[12px] font-bold text-[#18191C] leading-tight">Membalas<br/>ke</span>
+          </button>
+          <button type="button" onclick="setMsgFilter('like')" class="flex flex-col items-center gap-2 py-1">
+            <div class="w-12 h-12 rounded-2xl bg-[#FFF0F5] flex items-center justify-center">
+              <svg class="w-7 h-7" viewBox="0 0 36 36" fill="none"><path d="M18 30s-11-7-11-15.5C7 10.5 10 7.5 13.5 7.5c2.2 0 3.7 1.2 4.5 2.6.8-1.4 2.3-2.6 4.5-2.6 3.5 0 6.5 3 6.5 7C29 23 18 30 18 30z" fill="#FF759E" stroke="#18191C" stroke-width="2"/></svg>
+            </div>
+            <span class="text-[12px] font-bold text-[#18191C] leading-tight">Suka</span>
+          </button>
+          <button type="button" onclick="setMsgFilter('follow')" class="flex flex-col items-center gap-2 py-1">
+            <div class="w-12 h-12 rounded-2xl bg-[#E6FCFF] flex items-center justify-center">
+              <svg class="w-7 h-7" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="13" r="5.5" fill="#2EE0E0" stroke="#18191C" stroke-width="2"/><path d="M8.5 28c1.5-5 5-7.5 9.5-7.5s8 2.5 9.5 7.5H8.5z" fill="#2EE0E0" stroke="#18191C" stroke-width="2"/></svg>
+            </div>
+            <span class="text-[12px] font-bold text-[#18191C] leading-tight">Pengikut</span>
+          </button>
+          <button type="button" onclick="setMsgFilter('system')" class="flex flex-col items-center gap-2 py-1">
+            <div class="w-12 h-12 rounded-2xl bg-[#FFF8E1] flex items-center justify-center relative">
+              <svg class="w-7 h-7" viewBox="0 0 36 36" fill="none"><path d="M18 6c-5 0-8 3.8-8 9v5l-2.5 3h21L26 20v-5c0-5.2-3-9-8-9z" fill="#FFC940" stroke="#18191C" stroke-width="2"/><circle cx="18" cy="27" r="2.8" fill="#18191C"/></svg>
+              <span id="msgSysBadge" class="hidden absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-[#F54949] text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+            </div>
+            <span class="text-[12px] font-bold text-[#18191C] leading-tight">Pemberitah<br/>uan sistem</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Notification List + Cute Empty Mascot ("No more content") -->
+      <div id="messagesListBody" class="flex-1 px-4 py-4 space-y-3"></div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 4: SAYA / PROFIL (PERSIS GAMBAR image_8ee11e.jpg & image_8ee195.jpg)
+         =================================================================== -->
+    <section id="view-profile" class="app-view hidden flex-1 flex flex-col bg-white">
+      <!-- Illustrated Sky-Blue Header -->
+      <div class="bs-profile-banner safe-top relative pt-3 pb-16 px-4 overflow-hidden">
+        <!-- Decorative Mascot Silhouette -->
+        <svg class="absolute left-6 top-8 w-44 h-36 opacity-45 pointer-events-none" viewBox="0 0 220 160" fill="none">
+          <rect x="28" y="34" width="110" height="82" rx="22" fill="#FFFFFF"/>
+          <path d="M55 18 L72 36 M114 18 L98 36" stroke="#9ECFFF" stroke-width="7" stroke-linecap="round"/>
+          <path d="M138 68 Q175 56 196 34" stroke="#B6DBFF" stroke-width="18" stroke-linecap="round"/>
+          <circle cx="170" cy="40" r="14" fill="#9ECFFF" opacity="0.5"/>
+        </svg>
+
+        <!-- Top-Right 3 Round Action Buttons (Persis gambar 3 & 8) -->
+        <div class="relative z-10 flex justify-end gap-2.5">
+          <button type="button" onclick="openBackendSettingsModal()" class="w-9 h-9 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white" title="Pengaturan Server">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5-5 5-3-3-5 5"/></svg>
+          </button>
+          <button type="button" onclick="openVipSheet()" class="w-9 h-9 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white relative" title="Tema &amp; VIP">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 4l4 2 2-2 2 2 4-2 2 5-3 2v9H7v-9L4 9l2-5z"/></svg>
+            <span class="w-2 h-2 rounded-full bg-red-500 absolute top-0.5 right-0.5"></span>
+          </button>
+          <button type="button" onclick="openLoginSheet()" class="w-9 h-9 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white" title="Login / Ganti Akun">
+            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7V5a2 2 0 012-2h2M16 3h2a2 2 0 012 2v2M20 17v2a2 2 0 01-2 2h-2M8 21H6a2 2 0 01-2-2v-2M4 12h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Profile Info Card Overlapping Header -->
+      <div class="px-4 -mt-10 relative z-10 bg-white rounded-t-3xl pt-3 pb-4">
+        <div class="flex items-start justify-between">
+          <div class="pt-4 space-y-1.5">
+            <h1 id="profUserName" onclick="openLoginSheet()" class="text-[20px] font-extrabold text-[#18191C] leading-tight cursor-pointer">Akun Animedubar</h1>
+            <div class="flex items-center gap-4 text-[13px] text-[#61666D]">
+              <span><strong class="text-[#18191C]">0</strong> Pengikut</span>
+              <span><strong class="text-[#18191C]" id="profFollowCount">0</strong> Mengikuti</span>
+            </div>
+          </div>
+          <!-- Right Overlapping Circular Avatar -->
+          <button type="button" onclick="openLoginSheet()" class="-mt-11 w-[74px] h-[74px] rounded-full border-[3px] border-white shadow-md overflow-hidden bg-gradient-to-br from-[#2B5876] to-[#4E4376] flex items-center justify-center text-white font-black text-2xl shrink-0">
+            <span id="profAvatarInitial">A</span>
+          </button>
+        </div>
+
+        <!-- Info Pills (Premium / Tier / Region) -->
+        <div class="flex flex-wrap items-center gap-2 mt-3 text-[11.5px] font-semibold">
+          <span id="profTierPill" class="px-2.5 py-1 rounded-full bg-[#F4F5F7] text-[#61666D] inline-flex items-center gap-1">💎 Gratis</span>
+          <span id="profRolePill" class="px-2.5 py-1 rounded-full bg-[#E8F7FF] text-[#00AEEC]">♂ Member</span>
+          <span class="px-2.5 py-1 rounded-full bg-[#F4F5F7] text-[#61666D]">📍 Indonesia</span>
+        </div>
+
+        <!-- VIP Banner Card ("Jadi Premium ... [Go]") -->
+        <div onclick="openVipSheet()" class="mt-4 p-3.5 rounded-xl bg-gradient-to-r from-[#F2F3F5] via-[#F7F8FA] to-[#F2F3F5] border border-gray-100 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[#61666D] text-sm">💎</span>
+              <span id="profVipTitle" class="text-[14px] font-extrabold text-[#18191C]">Jadi Premium</span>
+            </div>
+            <p id="profVipSub" class="text-[12px] text-[#61666D] truncate mt-0.5">Premium dapat menonton banyak anime baru</p>
+          </div>
+          <span class="px-4 py-1.5 rounded-full bg-bsPink text-white text-[13px] font-extrabold shadow-sm shrink-0">Go</span>
+        </div>
+
+        <!-- Riwayat Section (Horizontal Cards + Cute TV Placeholders) -->
+        <div class="mt-5">
+          <button type="button" onclick="openHistoryListSheet()" class="w-full flex items-center justify-between py-2">
+            <span class="flex items-center gap-2.5 text-[15px] font-bold text-[#18191C]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+              <span>Riwayat</span>
+            </span>
+            <span class="text-[#9499A0] text-lg">›</span>
+          </button>
+          <div id="profHistoryStrip" class="grid grid-cols-3 gap-2.5 mt-1.5"></div>
+        </div>
+
+        <!-- Unduhan Saya & Favorit Saya -->
+        <div class="mt-4 divide-y divide-gray-100">
+          <button type="button" onclick="openDownloadsSheet()" class="w-full py-3.5 flex items-center justify-between">
+            <span class="flex items-center gap-3 text-[15px] font-semibold text-[#18191C]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/></svg>
+              <span>Unduhan Saya</span>
+              <span id="profVaultCountBadge" class="text-[11px] font-bold text-[#00AEEC] bg-[#E6F7FF] px-2 py-0.5 rounded-full">0</span>
+            </span>
+            <span class="text-[#9499A0] text-lg">›</span>
+          </button>
+          <button type="button" onclick="openFavoritesSheet()" class="w-full py-3.5 flex items-center justify-between">
+            <span class="flex items-center gap-3 text-[15px] font-semibold text-[#18191C]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4h12a1 1 0 011 1v15l-7-4-7 4V5a1 1 0 011-1z"/></svg>
+              <span>Favorit Saya</span>
+              <span id="profFavCountBadge" class="text-[11px] font-bold text-[#61666D] bg-[#F4F5F7] px-2 py-0.5 rounded-full">0</span>
+            </span>
+            <span class="text-[#9499A0] text-lg">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="h-2 bg-[#F4F5F7]"></div>
+
+      <!-- Pusat Pencipta Section (Persis gambar 3 & 8) -->
+      <div class="px-4 py-4 bg-white space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-[16px] font-extrabold text-[#18191C]">Pusat pencipta</h3>
+          <span class="text-[#9499A0] text-lg">›</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-[14px] font-semibold text-[#18191C]">
+          <button type="button" onclick="toast('Gunakan fitur Unggah Subtitle atau Request Anime Dub Arab melalui Admin WA!')" class="py-2 flex items-center gap-2.5">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+            <span>Peraturan Penciptaan</span>
+          </button>
+          <button type="button" onclick="openQuickActionSheet()" class="py-2 flex items-center gap-2.5">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0l-4 4m4-4l4 4M4 19h16"/></svg>
+            <span>Unggah</span>
+          </button>
+        </div>
+        <div onclick="openVipSheet()" class="p-2.5 rounded-xl bg-[#F4F9FD] border border-[#E2F2FE] flex items-center gap-3 cursor-pointer">
+          <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-[#18191C] to-[#E50914] flex items-center justify-center text-white font-black text-xs shrink-0">DUB<br/>AR</div>
+          <p class="text-[13px] font-bold text-[#18191C]">Program Request Anime Dubbing Arab &amp; Event VIP</p>
+        </div>
+      </div>
+
+      <div class="h-2 bg-[#F4F5F7]"></div>
+
+      <!-- Bottom Settings Menu (Persis gambar image_8ee195.jpg) -->
+      <div class="px-4 py-2 bg-white divide-y divide-gray-100 text-[15px] font-semibold text-[#18191C]">
+        <button type="button" onclick="openVipSheet()" class="w-full py-3.5 flex items-center justify-between">
+          <span class="flex items-center gap-3"><span>🚩</span><span>Acara</span></span>
+          <span class="text-[#9499A0] text-lg">›</span>
+        </button>
+        <button type="button" onclick="openBackendSettingsModal()" class="w-full py-3.5 flex items-center justify-between">
+          <span class="flex items-center gap-3"><span>⚙️</span><span>Pengaturan</span></span>
+          <span class="text-[#9499A0] text-lg">›</span>
+        </button>
+        <button type="button" onclick="openWhatsAppAdmin('Halo Admin Animedubar, saya butuh bantuan di Aplikasi HP Animedubar.')" class="w-full py-3.5 flex items-center justify-between">
+          <span class="flex items-center gap-3"><span>❓</span><span>Pusat Bantuan</span></span>
+          <span class="text-[#9499A0] text-lg">›</span>
+        </button>
+        <button type="button" onclick="openWhatsAppAdmin('Halo Admin Animedubar, saya ingin memberikan masukan / request judul anime dub Arab: ')" class="w-full py-3.5 flex items-center justify-between">
+          <span class="flex items-center gap-3"><span>💬</span><span>Feedback</span></span>
+          <span class="text-[#9499A0] text-lg">›</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         5-ITEM BOTTOM NAVIGATION BAR (PERSIS SEMUA GAMBAR BSTATION!)
+         Homepage | Cari | (+) Biru | Pesan (Badge) | Saya
+         =================================================================== -->
+    <nav id="bottomNav" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[520px] z-40 bg-white border-t border-gray-100 safe-bottom grid grid-cols-5 items-center pt-1.5 pb-1 text-[10.5px] font-semibold">
+      <button type="button" data-nav="home" onclick="switchNavTab('home')" class="bnav-btn flex flex-col items-center gap-0.5 text-[#18191C]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 01-1 1h-5v-6h-4v6H5a1 1 0 01-1-1v-9.5z" class="bnav-home-fill" fill="#FFE58F" stroke="#18191C" stroke-width="1.9" stroke-linejoin="round"/></svg>
+        <span>Homepage</span>
+      </button>
+      <button type="button" data-nav="search" onclick="switchNavTab('search')" class="bnav-btn flex flex-col items-center gap-0.5 text-[#61666D]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6.5" class="bnav-search-fill" fill="transparent" stroke="currentColor" stroke-width="1.9"/><path stroke="currentColor" stroke-width="1.9" stroke-linecap="round" d="m20 20-4.2-4.2"/></svg>
+        <span>Cari</span>
+      </button>
+      <button type="button" onclick="openQuickActionSheet()" class="flex items-center justify-center">
+        <span class="w-11 h-11 rounded-full bg-bsBlue border-[2.2px] border-[#18191C] flex items-center justify-center text-white text-2xl font-bold shadow-sm active:scale-90 transition">+</span>
+      </button>
+      <button type="button" data-nav="messages" onclick="switchNavTab('messages')" class="bnav-btn flex flex-col items-center gap-0.5 text-[#61666D] relative">
+        <div class="relative">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"><path d="M12 4c-4.7 0-8.5 3.3-8.5 7.4 0 2.3 1.2 4.3 3.1 5.7L5.5 20l3.7-1.4c.9.2 1.8.3 2.8.3 4.7 0 8.5-3.3 8.5-7.5S16.7 4 12 4z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 14.5s-3-1.9-3-3.9c0-1 .8-1.8 1.7-1.8.6 0 1.1.3 1.3.8.2-.5.7-.8 1.3-.8.9 0 1.7.8 1.7 1.8 0 2-3 3.9-3 3.9z" class="bnav-msg-heart" fill="currentColor"/></svg>
+          <span id="navMsgBadge" class="hidden absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#F54949] text-white text-[9.5px] font-extrabold flex items-center justify-center">0</span>
+        </div>
+        <span>Pesan</span>
+      </button>
+      <button type="button" data-nav="profile" onclick="switchNavTab('profile')" class="bnav-btn flex flex-col items-center gap-0.5 text-[#61666D]">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"><path d="M8 4l2.5 2.5M16 4l-2.5 2.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><rect x="4" y="7" width="16" height="12.5" rx="3.5" stroke="currentColor" stroke-width="1.9"/><circle cx="9.5" cy="13" r="1.2" fill="currentColor"/><circle cx="14.5" cy="13" r="1.2" fill="currentColor"/></svg>
+        <span>Saya</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- =======================================================================
+       WATCH / PLAYER SCREEN (PERSIS GAMBAR image_8ee1b1.jpg & image_8ee1b9.jpg)
+       Sticky 16:9 Player + Promo Bar + Info/Komentar Tabs + Episode Grid
+       + Tombol Fullscreen -> 100% Fullscreen Netflix Cinema Player!
+       ======================================================================= -->
+  <div id="watchScreen" class="hidden fixed inset-0 z-50 bg-white max-w-[520px] mx-auto flex flex-col overflow-hidden">
+    <!-- Top 16:9 Video Stage -->
+    <div id="watchStage" class="relative w-full aspect-video bg-black shrink-0 overflow-hidden select-none">
+      <!-- Native HTML5 / HLS Video -->
+      <video id="watchVideo" class="hidden w-full h-full object-contain bg-black" playsinline crossorigin="anonymous" controlslist="nodownload noplaybackrate" oncontextmenu="return false;"></video>
+
+      <!-- Google Drive Cinema-Clean Mode (Anti-Popout Shield) -->
+      <div id="watchIframeWrap" class="hidden absolute inset-0 w-full h-full overflow-hidden bg-black">
+        <iframe id="watchIframe" src="" class="w-full h-full border-0 transition-transform duration-300" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="absolute top-0 right-0 w-24 h-16 z-20 bg-gradient-to-bl from-black via-black/90 to-transparent"></div>
+      </div>
+
+      <!-- Demo Backdrop -->
+      <div id="watchDemoWrap" class="hidden absolute inset-0 w-full h-full">
+        <div id="watchDemoBg" class="w-full h-full opacity-75"></div>
+      </div>
+
+      <!-- Brightness Dimmer -->
+      <div id="watchDimmer" class="pointer-events-none absolute inset-0 bg-black z-10" style="opacity:0;"></div>
+
+      <!-- Watermark top-right (Persis gambar 9 & 10) -->
+      <div class="pointer-events-none absolute top-2.5 right-3 z-20 text-right opacity-70">
+        <p class="text-[10px] font-bold text-white/90">📺 Animedubar</p>
+        <p class="text-[9px] text-white/75">Hak Cipta Premium</p>
+      </div>
+
+      <!-- Dual Subtitle Overlay -->
+      <div id="watchSubOverlay" class="pointer-events-none absolute left-3 right-3 bottom-10 z-20 flex flex-col items-center gap-1 text-center">
+        <div id="watchSubAr" dir="rtl" class="font-arabic font-bold text-amber-300 bg-black/75 px-2.5 py-0.5 rounded text-sm max-w-[94%]" style="display:none;"></div>
+        <div id="watchSubId" class="font-sans font-semibold text-white bg-black/75 px-2.5 py-0.5 rounded text-xs max-w-[94%]" style="display:none;"></div>
+      </div>
+
+      <!-- Compact Inline Player Controls Overlay -->
+      <div id="watchInlineHud" class="absolute inset-0 z-30 bg-gradient-to-b from-black/60 via-transparent to-black/75 flex flex-col justify-between p-2.5" onclick="toggleWatchPlay()">
+        <div class="flex items-center justify-between" onclick="event.stopPropagation()">
+          <button type="button" onclick="closeWatchScreen()" class="w-8 h-8 rounded-full bg-black/45 text-white flex items-center justify-center text-lg font-bold">←</button>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="openFullscreenCinema()" class="px-2.5 py-1 rounded-full bg-black/55 border border-white/20 text-[10px] font-bold text-white">⛶ Layar Penuh</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+          <button type="button" id="watchInlinePlayBtn" onclick="toggleWatchPlay()" class="w-8 h-8 rounded-full bg-black/50 text-white text-xs font-bold flex items-center justify-center">❚❚</button>
+          <input id="watchSeek" type="range" min="0" max="100" step="0.1" value="8" oninput="seekWatchPercent(this.value)" class="flex-1 accent-[#1BB3F5] h-1" />
+          <span id="watchTimeTxt" class="text-[10px] font-mono text-white shrink-0">02:00/24:00</span>
+          <button type="button" onclick="openFullscreenCinema()" class="w-8 h-8 rounded-full bg-black/50 text-white text-sm font-bold flex items-center justify-center" title="Fullscreen Netflix Mode">⛶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark Premium Promo Bar Below Player (Persis gambar 9 & 10) -->
+    <div id="watchVipPromoBar" class="bg-[#18191C] text-white px-3.5 py-2.5 flex items-center justify-between gap-2.5 shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-xl shrink-0">👑</div>
+        <p class="text-[12.5px] font-bold leading-snug text-white">Jadi Premium dan nikmati<br/>Anime Baru yang melimpah!</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button type="button" onclick="openVipSheet()" class="px-4 py-1.5 rounded-full bg-bsPink text-white text-[12px] font-extrabold">Langganan</button>
+        <button type="button" onclick="document.getElementById('watchVipPromoBar').classList.add('hidden')" class="text-zinc-400 text-sm px-1">✕</button>
+      </div>
+    </div>
+
+    <!-- Info | Komentar | Dapat Premium Tab Bar -->
+    <div class="bg-white border-b border-gray-100 px-4 flex items-center gap-6 shrink-0">
+      <button type="button" id="wTabInfoBtn" onclick="setWatchSubTab('info')" class="py-3 text-[15px] font-extrabold text-[#18191C] border-b-[2.5px] border-[#18191C]">Info</button>
+      <button type="button" id="wTabCommBtn" onclick="setWatchSubTab('comments')" class="py-3 text-[15px] font-bold text-[#61666D] border-b-[2.5px] border-transparent">Komentar <span id="watchCommCount" class="text-[12px] font-semibold">1.2K</span></button>
+      <button type="button" onclick="openVipSheet()" class="bs-comic-premium ml-1">Dapat Premium</button>
+    </div>
+
+    <!-- Scrollable Watch Details / Comments Body -->
+    <div id="watchBodyScroll" class="flex-1 overflow-y-auto bg-white">
+      <!-- INFO TAB (Persis gambar image_8ee1b1.jpg) -->
+      <div id="watchPaneInfo" class="p-4 space-y-4"></div>
+
+      <!-- KOMENTAR TAB (Persis gambar image_8ee1b9.jpg) -->
+      <div id="watchPaneComments" class="hidden pb-16"></div>
+    </div>
+
+    <!-- Sticky Comment Input Bar (Visible when Komentar tab active) -->
+    <form id="watchCommentForm" onsubmit="submitWatchComment(event)" class="hidden bg-white border-t border-gray-100 px-3.5 py-2.5 safe-bottom flex items-center gap-2.5 shrink-0">
+      <input id="watchCommentInput" type="text" required placeholder="Tulis komentar ramah (°▽°)~" class="flex-1 h-9 rounded-full bg-[#F4F5F7] px-4 text-[13px] text-[#18191C] placeholder-[#9499A0] focus:outline-none" />
+      <button type="submit" class="px-3.5 h-9 rounded-full bg-bsBlue text-white text-[12px] font-extrabold shrink-0">Kirim</button>
+    </form>
+  </div>
+
+  <!-- =======================================================================
+       100% FULLSCREEN NETFLIX CINEMA OVERLAY (SAAT KLIK LAYAR PENUH!)
+       Pencahayaan Vertikal, Pangkas, Kecepatan, Kunci/Buka Kunci, Episode,
+       Audio & Subtitle (.ass/.srt/.vtt + Upload), Eps. Berikutnya
+       ======================================================================= -->
+  <div id="fsCinemaOverlay" class="hidden fixed inset-0 z-[90] bg-black text-white flex flex-col justify-between select-none">
+    <!-- Fullscreen Media Host (watchVideo / watchIframe moves here dynamically) -->
+    <div id="fsMediaSlot" class="absolute inset-0 w-full h-full bg-black flex items-center justify-center overflow-hidden" onclick="toggleFsHud()"></div>
+    <div id="fsDimmer" class="pointer-events-none absolute inset-0 bg-black z-10" style="opacity:0;"></div>
+
+    <!-- Dual Subtitle Fullscreen -->
+    <div id="fsSubOverlay" class="pointer-events-none absolute left-6 right-6 bottom-20 z-20 flex flex-col items-center gap-1.5 text-center">
+      <div id="fsSubAr" dir="rtl" class="font-arabic font-bold text-amber-300 bg-black/80 px-3.5 py-1 rounded-lg text-lg max-w-[92%]" style="display:none;"></div>
+      <div id="fsSubId" class="font-sans font-semibold text-white bg-black/80 px-3.5 py-1 rounded-lg text-sm max-w-[92%]" style="display:none;"></div>
+    </div>
+
+    <!-- Screen Lock Overlay -->
+    <div id="fsLockOverlay" class="hidden absolute inset-0 z-50 bg-black/15 flex flex-col items-center justify-end pb-8" onclick="showFsUnlockBtn()">
+      <div class="px-5 py-2 rounded-full bg-black/85 border border-white/25 text-xs font-bold">🔒 Layar Terkunci — Ketuk untuk Buka</div>
+      <button type="button" id="fsUnlockBtn" onclick="event.stopPropagation(); toggleFsLock(false);" class="hidden mt-2.5 px-6 py-2 rounded-full bg-white text-black font-extrabold text-xs">🔓 Buka Kunci Kontrol?</button>
+    </div>
+
+    <!-- Auto-Hiding Fullscreen Netflix HUD -->
+    <div id="fsHud" class="relative z-30 flex-1 bg-gradient-to-b from-black/80 via-transparent to-black/90 flex flex-col justify-between p-4 sm:p-6 transition-opacity duration-300">
+      <div class="flex items-center justify-between gap-3">
+        <button type="button" onclick="closeFullscreenCinema()" class="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center text-xl font-bold">←</button>
+        <div class="flex-1 text-center min-w-0 px-2">
+          <p id="fsTitle" class="text-sm font-extrabold truncate">-</p>
+          <p id="fsSubTitle" class="text-[11px] text-zinc-300 truncate">-</p>
+        </div>
+        <button type="button" onclick="closeFullscreenCinema()" class="px-3 py-1.5 rounded-full bg-white/15 text-[11px] font-bold">Keluar FS</button>
+      </div>
+
+      <div class="relative flex-1 flex items-center justify-center">
+        <!-- Vertical Brightness Bar -->
+        <div class="absolute left-1 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 bg-black/55 px-2 py-2.5 rounded-2xl border border-white/15">
+          <span class="text-xs">☀️</span>
+          <input id="fsBrightInput" type="range" min="30" max="150" value="100" oninput="setFsBrightness(this.value)" class="h-24 accent-white" style="writing-mode:vertical-lr; direction:rtl; width:16px;" />
+          <span id="fsBrightLbl" class="text-[9px] font-mono">100%</span>
+        </div>
+
+        <div id="fsCenterBtns" class="flex items-center gap-10">
+          <button type="button" onclick="skipWatchSeconds(-10)" class="w-12 h-12 rounded-full bg-black/50 flex flex-col items-center justify-center"><span class="text-lg leading-none">↺</span><span class="text-[9px] font-bold">10</span></button>
+          <button type="button" id="fsBigPlayBtn" onclick="toggleWatchPlay()" class="w-16 h-16 rounded-full bg-black/65 border-2 border-white flex items-center justify-center text-2xl">❚❚</button>
+          <button type="button" onclick="skipWatchSeconds(10)" class="w-12 h-12 rounded-full bg-black/50 flex flex-col items-center justify-center"><span class="text-lg leading-none">↻</span><span class="text-[9px] font-bold">10</span></button>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <div class="flex items-center gap-3">
+          <input id="fsSeekBar" type="range" min="0" max="100" step="0.1" value="8" oninput="seekWatchPercent(this.value)" class="flex-1 accent-[#E50914] h-1.5" />
+          <span id="fsTimeLbl" class="text-xs font-mono shrink-0">-21:00</span>
+        </div>
+        <div class="grid grid-cols-6 gap-1 text-[10px] font-bold text-center">
+          <button type="button" onclick="cycleFsCrop()" class="py-1.5 rounded-lg hover:bg-white/10">⤢ <span id="fsCropLbl">Pangkas</span></button>
+          <button type="button" onclick="openFsDrawer('speed')" class="py-1.5 rounded-lg hover:bg-white/10">⚡ <span id="fsSpeedLbl">1x</span></button>
+          <button type="button" onclick="toggleFsLock(true)" class="py-1.5 rounded-lg hover:bg-white/10">🔓 Kunci</button>
+          <button type="button" onclick="openFsDrawer('episodes')" class="py-1.5 rounded-lg hover:bg-white/10">▤ Episode</button>
+          <button type="button" onclick="openFsDrawer('audioSub')" class="py-1.5 rounded-lg hover:bg-white/10">💬 Sub/Audio</button>
+          <button type="button" onclick="playNextEpisode()" class="py-1.5 rounded-lg hover:bg-white/10">⏭ Berikutnya</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Drawer (Speed / Episodes / Audio & Subtitle Upload) -->
+    <div id="fsDrawerBd" class="hidden absolute inset-0 z-40 bg-black/80 flex items-center justify-center p-4" onclick="closeFsDrawer()">
+      <div id="fsDrawerCard" class="w-full max-w-md bg-[#18191C] border border-white/15 rounded-2xl p-4 max-h-[82vh] overflow-y-auto space-y-3 text-xs" onclick="event.stopPropagation()"></div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 1: PERJANJIAN PENGGUNA & PRIVASI (PERSIS GAMBAR image_8ee0f7.jpg)
+       ======================================================================= -->
+  <div id="privacyModal" class="hidden fixed inset-0 z-[100] bg-black/75 flex items-center justify-center p-6">
+    <div class="anim-up w-full max-w-[330px] rounded-2xl bg-[#2B2B2E] text-white px-6 py-7 text-center shadow-2xl space-y-5">
+      <h2 class="text-[19px] font-extrabold leading-snug">Perjanjian Pengguna dan<br/>Kebijakan Privasi Konten</h2>
+      <p class="text-[13.5px] leading-relaxed text-[#D8D8DC]">
+        Terima kasih telah mempercayai dan menggunakan layanan Animedubar. Dengan mengklik tombol "Setuju dan Lanjutkan" di bawah, Anda mengakui bahwa Anda telah membaca dengan saksama dan menyetujui <span class="text-[#1BB3F5] font-semibold">Perjanjian Pengguna</span> dan <span class="text-[#1BB3F5] font-semibold">Kebijakan Privasi</span> kami, serta menyetujui bahwa kami akan mengumpulkan, menggunakan, dan memproses informasi pribadi Anda sesuai dengan Kebijakan Privasi.
+      </p>
+      <div class="space-y-3 pt-1">
+        <button type="button" onclick="acceptPrivacyAgreement()" class="w-full py-3 rounded-full bg-bsBlue hover:brightness-105 text-white text-[15px] font-extrabold shadow-lg transition">Setuju dan Lanjutkan</button>
+        <button type="button" onclick="toast('Anda perlu menyetujui kebijakan privasi untuk melanjutkan.')" class="w-full py-1.5 text-[14px] font-semibold text-[#A1A1A6]">Tidak Setuju</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 2: LOGIN BOTTOM SHEET (PERSIS GAMBAR image_8ee117.jpg)
+       ======================================================================= -->
+  <div id="loginSheet" class="hidden fixed inset-0 z-[95] bg-black/65 flex items-end justify-center" onclick="if(event.target===this) closeOverlay('loginSheet')">
+    <div class="anim-up w-full max-w-[520px] rounded-t-3xl bg-[#2B2B2E] text-white px-6 pt-3 pb-7 safe-bottom space-y-4">
+      <div class="w-10 h-1 rounded-full bg-white/30 mx-auto mb-2"></div>
+      <div class="text-center space-y-1.5">
+        <h2 class="text-[22px] font-extrabold">Login Animedubar</h2>
+        <p class="text-[13px] text-[#A8A8B0]">Login dan jelajahi Animedubar, nikmati kualitas yang lebih tinggi</p>
+      </div>
+
+      <!-- 3 Social Login Buttons Persis Gambar 2 -->
+      <div class="space-y-3 pt-2">
+        <button type="button" onclick="quickSocialLogin('Google')" class="w-full h-12 rounded-full bg-[#45454A] hover:bg-[#525258] px-5 flex items-center justify-center relative font-bold text-[14.5px] transition">
+          <span class="absolute -top-2.5 right-4 px-2 py-0.5 rounded bg-white text-[#18191C] text-[10px] font-extrabold shadow">Login terakhir</span>
+          <span class="absolute left-5 font-black text-lg text-[#4285F4]">G</span>
+          <span>Lanjutkan dengan Google</span>
+        </button>
+        <button type="button" onclick="quickSocialLogin('Facebook')" class="w-full h-12 rounded-full bg-[#45454A] hover:bg-[#525258] px-5 flex items-center justify-center relative font-bold text-[14.5px] transition">
+          <span class="absolute left-5 w-6 h-6 rounded-full bg-[#1877F2] text-white font-black text-sm flex items-center justify-center">f</span>
+          <span>Lanjutkan dengan Facebook</span>
+        </button>
+        <button type="button" onclick="quickSocialLogin('Twitter')" class="w-full h-12 rounded-full bg-[#45454A] hover:bg-[#525258] px-5 flex items-center justify-center relative font-bold text-[14.5px] transition">
+          <span class="absolute left-5 text-[#1DA1F2] font-black text-lg">𝕏</span>
+          <span>Twitter</span>
+        </button>
+      </div>
+
+      <!-- Expandable "Masuk dengan cara lain v" -> Email/Password Apps Script + Voucher VIP -->
+      <div class="text-center pt-1">
+        <button type="button" onclick="document.getElementById('otherLoginFormWrap').classList.toggle('hidden')" class="text-[13.5px] font-bold text-[#1BB3F5]">Masuk dengan cara lain ⌄</button>
+      </div>
+
+      <div id="otherLoginFormWrap" class="hidden space-y-3 bg-[#1E1E22] p-4 rounded-2xl border border-white/10">
+        <form onsubmit="submitBackendLogin(event)" class="space-y-2.5 text-xs">
+          <p class="font-bold text-zinc-200">Masuk Akun Email (Apps Script Backend)</p>
+          <input id="loginEmailInp" type="email" required placeholder="Email Akun Anda" class="w-full bg-[#2B2B30] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#1BB3F5]" />
+          <input id="loginPassInp" type="password" required placeholder="Password" class="w-full bg-[#2B2B30] border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#1BB3F5]" />
+          <button type="submit" class="w-full py-2.5 rounded-full bg-bsBlue text-white font-extrabold">Masuk Sekarang</button>
+        </form>
+        <div class="border-t border-white/10 pt-2.5 flex items-center justify-between text-xs">
+          <span class="text-zinc-400">Punya Kode Voucher VIP?</span>
+          <button type="button" onclick="closeOverlay('loginSheet'); openVipSheet('voucher');" class="text-bsPink font-extrabold">Aktivasi Voucher →</button>
+        </div>
+      </div>
+
+      <!-- 17+ Age Agreement Checkbox Persis Gambar 2 -->
+      <label class="flex items-start gap-2.5 text-[11.5px] text-[#9A9AA2] leading-relaxed pt-1 cursor-pointer">
+        <input id="loginAgeCheck" type="checkbox" checked class="mt-0.5 w-4 h-4 rounded accent-[#1BB3F5] shrink-0" />
+        <span>Saya telah berusia 17 tahun ke atas. Dengan melanjutkan ini, Anda telah mengetahui dan menyetujui bahwa Anda telah membaca dan menyetujui untuk terikat dengan <span class="text-[#1BB3F5]">Syarat Layanan</span> dan <span class="text-[#1BB3F5]">Kebijakan Privasi</span>.</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 3: VIP / PREMIUM CHECKOUT (QRIS + TRANSFER BANK + VOUCHER VIP)
+       ======================================================================= -->
+  <div id="vipSheet" class="hidden fixed inset-0 z-[96] bg-black/65 flex items-end justify-center" onclick="if(event.target===this) closeOverlay('vipSheet')">
+    <div class="anim-up w-full max-w-[520px] max-h-[88vh] overflow-y-auto rounded-t-3xl bg-white text-[#18191C] p-5 safe-bottom space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-[18px] font-extrabold">💎 Animedubar Premium VIP</h3>
+          <p class="text-[12px] text-[#61666D]">Buka 100% Anime Dub Arab HD, Dual Sub &amp; Unduhan In-App</p>
+        </div>
+        <button type="button" onclick="closeOverlay('vipSheet')" class="w-8 h-8 rounded-full bg-[#F4F5F7] font-bold text-[#61666D]">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[#F4F5F7] text-[12.5px] font-bold">
+        <button type="button" id="vTabPay" onclick="switchVipTab('pay')" class="py-2 rounded-lg bg-white text-[#18191C] shadow-sm">Bayar QRIS / TF</button>
+        <button type="button" id="vTabVoucher" onclick="switchVipTab('voucher')" class="py-2 rounded-lg text-[#61666D]">Kode Voucher VIP</button>
+      </div>
+
+      <div id="vipPanePay" class="space-y-3">
+        <div id="vipPlansGrid" class="grid grid-cols-3 gap-2"></div>
+        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+          <button type="button" id="payMethodQris" onclick="selectPayMethod('QRIS')" class="py-2.5 rounded-xl border-2 border-bsPink bg-[#FFF0F5] text-bsPink">QRIS Otomatis</button>
+          <button type="button" id="payMethodTf" onclick="selectPayMethod('BANK_TRANSFER')" class="py-2.5 rounded-xl border border-gray-200 text-[#61666D]">Transfer Bank</button>
+        </div>
+        <button type="button" onclick="createVipInvoice()" class="w-full py-3 rounded-full bg-bsPink text-white font-extrabold text-sm shadow">Bayar &amp; Aktifkan VIP Sekarang</button>
+        <div id="vipInvoiceBox" class="hidden p-4 rounded-2xl bg-[#F4F5F7] space-y-2.5 text-xs"></div>
+      </div>
+
+      <div id="vipPaneVoucher" class="hidden space-y-3">
+        <form onsubmit="redeemVipVoucher(event)" class="space-y-2.5">
+          <input id="voucherCodeInp" type="text" required placeholder="Contoh: ANIMEDUBAR-VIP30 atau DEMO-VIP7" oninput="this.value=this.value.toUpperCase()" class="w-full h-11 rounded-xl border border-gray-300 px-3.5 font-mono font-bold uppercase text-sm focus:border-[#1BB3F5] focus:outline-none" />
+          <button type="submit" class="w-full py-3 rounded-full bg-bsBlue text-white font-extrabold text-sm">Aktifkan Kode Voucher</button>
+        </form>
+        <div class="flex flex-wrap gap-1.5 text-[11px]">
+          <button type="button" onclick="document.getElementById('voucherCodeInp').value='DEMO-VIP7'" class="px-2.5 py-1 rounded-full bg-[#E6F7FF] text-[#00AEEC] font-mono font-bold">DEMO-VIP7</button>
+          <button type="button" onclick="document.getElementById('voucherCodeInp').value='ANIMEDUBAR-VIP30'" class="px-2.5 py-1 rounded-full bg-[#E6F7FF] text-[#00AEEC] font-mono font-bold">ANIMEDUBAR-VIP30</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 4: QUICK ACTION SHEET (TOMBOL '+' TENGAH BOTTOM BAR)
+       ======================================================================= -->
+  <div id="quickActionSheet" class="hidden fixed inset-0 z-[94] bg-black/55 flex items-end justify-center" onclick="if(event.target===this) closeOverlay('quickActionSheet')">
+    <div class="anim-up w-full max-w-[520px] rounded-t-3xl bg-white p-5 safe-bottom space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-[16px] font-extrabold text-[#18191C]">Menu Cepat Animedubar</h3>
+        <button type="button" onclick="closeOverlay('quickActionSheet')" class="w-8 h-8 rounded-full bg-[#F4F5F7] text-[#61666D] font-bold">✕</button>
+      </div>
+      <div class="grid grid-cols-3 gap-3 text-center text-[12px] font-bold">
+        <button type="button" onclick="closeOverlay('quickActionSheet'); openVipSheet();" class="p-3.5 rounded-2xl bg-[#FFF0F5] text-bsPink flex flex-col items-center gap-1.5">
+          <span class="text-2xl">💎</span><span>Jadi Premium</span>
+        </button>
+        <button type="button" onclick="closeOverlay('quickActionSheet'); openDownloadsSheet();" class="p-3.5 rounded-2xl bg-[#E8F7FF] text-[#00AEEC] flex flex-col items-center gap-1.5">
+          <span class="text-2xl">⬇️</span><span>Unduhan Saya</span>
+        </button>
+        <button type="button" onclick="closeOverlay('quickActionSheet'); openWhatsAppAdmin('Halo Admin Animedubar, saya ingin request anime dubbing Arab: ');" class="p-3.5 rounded-2xl bg-[#E9FBF0] text-emerald-600 flex flex-col items-center gap-1.5">
+          <span class="text-2xl">💬</span><span>Request Anime</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 5: UNIVERSAL LIST SHEET (UNDUHAN SAYA / FAVORIT / RIWAYAT / PENGATURAN)
+       ======================================================================= -->
+  <div id="listModalSheet" class="hidden fixed inset-0 z-[94] bg-black/55 flex items-end justify-center" onclick="if(event.target===this) closeOverlay('listModalSheet')">
+    <div class="anim-up w-full max-w-[520px] max-h-[85vh] flex flex-col rounded-t-3xl bg-white overflow-hidden">
+      <div class="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <h3 id="listModalTitle" class="text-[16px] font-extrabold text-[#18191C]">Daftar</h3>
+        <button type="button" onclick="closeOverlay('listModalSheet')" class="w-8 h-8 rounded-full bg-[#F4F5F7] text-[#61666D] font-bold">✕</button>
+      </div>
+      <div id="listModalBody" class="flex-1 overflow-y-auto p-4 space-y-3 safe-bottom text-xs"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastBox" class="hidden fixed top-14 left-1/2 -translate-x-1/2 z-[120] px-4 py-2 rounded-full bg-[#18191C]/90 text-white text-xs font-bold shadow-xl max-w-[88vw] text-center"></div>
+
+  <!-- OneSignal Web SDK (Fallback when opened as PWA; Native APK uses cordova OneSignal plugin!) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <script>
+    /* =========================================================================
+       1. KONFIGURASI UTAMA & ONESIGNAL (OTOMATIS DIINJEKSI OLEH GITHUB ACTIONS)
+       ========================================================================= */
+    const DEFAULT_APP_CONFIG = {
+      brandName: "Animedubar",
+      whatsappNumber: "6281234567890",
+      backendWebAppUrl: "__BACKEND_WEBAPP_URL__",
+      oneSignalAppId: "__ONESIGNAL_APP_ID__",
+      qrisImageUrl: "",
+      bankName: "BCA / BSI / BRI",
+      bankAccountNumber: "1234567890",
+      bankAccountHolder: "ANIMEDUBAR OFFICIAL",
+      offlineQuotas: { FREE: 0, monthly: 5, quarterly: 15, yearly: 50 },
+      notifPollSeconds: 45,
+      vouchers: [
+        { code: "DEMO-VIP7", planName: "VIP Trial 7 Hari", planId: "monthly", durationDays: 7, status: "ACTIVE" },
+        { code: "ANIMEDUBAR-VIP30", planName: "VIP Bulanan 30 Hari", planId: "monthly", durationDays: 30, status: "ACTIVE" },
+        { code: "ARAB-PRO365", planName: "VIP Tahunan 365 Hari", planId: "yearly", durationDays: 365, status: "ACTIVE" }
+      ],
+      vipPlans: [
+        { id: "monthly", name: "Bulanan", duration: "30 Hari", price: "Rp 29.000", amount: 29000 },
+        { id: "quarterly", name: "3 Bulan", duration: "90 Hari", price: "Rp 75.000", amount: 75000, popular: true },
+        { id: "yearly", name: "Tahunan", duration: "365 Hari", price: "Rp 249.000", amount: 249000 }
+      ],
+      catalog: [
+        {
+          id: "conan-ar", title: "Detective Conan (Dub Arab) SUB INDO", arabicTitle: "المحقق كونان - مدبلج عربي",
+          type: "anime", year: 2026, rating: "9.4", views: "8.3M", likes: 480, topRank: 1, isVip: false,
+          channel: "Animedubar Official", genres: ["Misteri", "Detektif", "Dub Arab"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#1d4ed8", c2: "#0f172a" },
+          synopsis: "Shinichi Kudo berubah menjadi anak kecil akibat racun organisasi hitam. Dubbing Bahasa Arab HD lengkap dengan Dual Subtitle Indonesia & Arab.",
+          seasons: [{ seasonNumber: 1, title: "S1", episodes: [
+            { ep: 1, title: "Kasus Roller Coaster", duration: "24:12", isVip: false, driveSubId: "DEMO_CONAN_1", driveSubAr: "DEMO_CONAN_1", driveDual: "DEMO_CONAN_1", hlsUrl: "" },
+            { ep: 2, title: "Putri Presiden yang Hilang", duration: "24:05", isVip: false, driveSubId: "DEMO_CONAN_2", driveSubAr: "DEMO_CONAN_2", driveDual: "DEMO_CONAN_2", hlsUrl: "" },
+            { ep: 3, title: "Rahasia Ruang Terkunci", duration: "24:18", isVip: true, driveSubId: "DEMO_CONAN_3", driveSubAr: "DEMO_CONAN_3", driveDual: "DEMO_CONAN_3", hlsUrl: "" }
+          ]}]
+        },
+        {
+          id: "the-journey-ar", title: "The Journey: Pasukan Gajah (2026) Subtitle Indonesia", arabicTitle: "الرحلة - فيلم أنمي عربي",
+          type: "movie", year: 2026, rating: "9.2", views: "19.0K", likes: 312, topRank: 2, isVip: true,
+          channel: "Manga Productions AR", genres: ["Sejarah", "Epik", "Film Arab"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#b45309", c2: "#1c1208" },
+          synopsis: "Film anime epik kolaborasi Arab Saudi & Jepang tentang keberanian mempertahankan Makkah dengan audio Bahasa Arab dan Dual Subtitle.",
+          seasons: [{ seasonNumber: 1, title: "Movie", episodes: [
+            { ep: 1, title: "The Journey (Full Movie HD)", duration: "01:41:17", isVip: true, driveSubId: "DEMO_JOURNEY", driveSubAr: "DEMO_JOURNEY", driveDual: "DEMO_JOURNEY", hlsUrl: "" }
+          ]}]
+        },
+        {
+          id: "hxh-ar", title: "Hunter x Hunter: Al-Qannas (Dub Arab) SUB INDO", arabicTitle: "القناص - مدبلج بالعربية",
+          type: "anime", year: 2026, rating: "9.5", views: "13.2K", likes: 620, topRank: 3, isVip: false,
+          channel: "Animedubar Classic", genres: ["Aksi", "Petualangan", "Fantasi"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#047857", c2: "#091914" },
+          synopsis: "Perjalanan Gon Freecss dan Killua mengikuti Ujian Hunter dalam dubbing Arab fusha legendaris.",
+          seasons: [{ seasonNumber: 1, title: "S1", episodes: [
+            { ep: 1, title: "Keberangkatan & Sahabat Baru", duration: "24:00", isVip: false, driveSubId: "DEMO_HXH_1", driveSubAr: "DEMO_HXH_1", driveDual: "DEMO_HXH_1", hlsUrl: "" },
+            { ep: 2, title: "Ujian di Hutan Kabut", duration: "24:15", isVip: true, driveSubId: "DEMO_HXH_2", driveSubAr: "DEMO_HXH_2", driveDual: "DEMO_HXH_2", hlsUrl: "" }
+          ]}]
+        },
+        {
+          id: "demon-slayer-ar", title: "Kimetsu no Yaiba (Dub Arab) Season 1", arabicTitle: "قاتل الشياطين - مدبلج",
+          type: "anime", year: 2026, rating: "9.4", views: "3.2M", likes: 890, topRank: 4, isVip: true,
+          channel: "Animedubar VIP", genres: ["Aksi", "Pedang", "Fantasi"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#be123c", c2: "#18080e" },
+          synopsis: "Tanjiro Kamado berjuang menyelamatkan adiknya Nezuko dengan audio Dubbing Bahasa Arab kualitas studio.",
+          seasons: [{ seasonNumber: 1, title: "S1", episodes: [
+            { ep: 1, title: "Kekejaman di Gunung Salju", duration: "24:30", isVip: true, driveSubId: "DEMO_KNY_1", driveSubAr: "DEMO_KNY_1", driveDual: "DEMO_KNY_1", hlsUrl: "" },
+            { ep: 2, title: "Pelatih Urokodaki", duration: "24:10", isVip: true, driveSubId: "DEMO_KNY_2", driveSubAr: "DEMO_KNY_2", driveDual: "DEMO_KNY_2", hlsUrl: "" }
+          ]}]
+        },
+        {
+          id: "bilal-movie-ar", title: "Bilal: A New Breed of Hero (Full Movie Dub Arab)", arabicTitle: "بلال - فيلم أنيميشن عربي",
+          type: "movie", year: 2025, rating: "9.3", views: "2.1M", likes: 540, topRank: 5, isVip: false,
+          channel: "Barajoun Studios", genres: ["Sejarah", "Biografi", "Keluarga"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#92400e", c2: "#140e07" },
+          synopsis: "Kisah inspiratif Bilal bin Rabah dalam film animasi layar lebar Bahasa Arab + Dual Subtitle Indonesia & Arab.",
+          seasons: [{ seasonNumber: 1, title: "Movie", episodes: [
+            { ep: 1, title: "Bilal Full Movie HD", duration: "01:45:00", isVip: false, driveSubId: "DEMO_BILAL", driveSubAr: "DEMO_BILAL", driveDual: "DEMO_BILAL", hlsUrl: "" }
+          ]}]
+        },
+        {
+          id: "naruto-ar", title: "Naruto Shippuden (Dub Arab) SUB INDO", arabicTitle: "ناروتو شيبودن - مدبلج",
+          type: "anime", year: 2025, rating: "9.1", views: "19.3K", likes: 410, topRank: 6, isVip: false,
+          channel: "Animedubar Official", genres: ["Aksi", "Ninja", "Petualangan"], posterUrl: "", backdropUrl: "",
+          theme: { c1: "#ea580c", c2: "#1b1008" },
+          synopsis: "Naruto Uzumaki kembali ke Desa Konoha dengan kekuatan baru demi menyelamatkan sahabatnya.",
+          seasons: [{ seasonNumber: 1, title: "S1", episodes: [
+            { ep: 1, title: "Pulang Kampung", duration: "23:40", isVip: false, driveSubId: "DEMO_NARUTO_1", driveSubAr: "DEMO_NARUTO_1", driveDual: "DEMO_NARUTO_1", hlsUrl: "" }
+          ]}]
+        }
+      ]
+    };
+
+    if (DEFAULT_APP_CONFIG.backendWebAppUrl.includes("__BACKEND_")) DEFAULT_APP_CONFIG.backendWebAppUrl = "";
+    if (DEFAULT_APP_CONFIG.oneSignalAppId.includes("__ONESIGNAL_")) DEFAULT_APP_CONFIG.oneSignalAppId = "";
+
+    const STORE_KEY = "animedubar_bs_apk_v1";
+    const loadObj = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : JSON.parse(JSON.stringify(fb)); } catch { return JSON.parse(JSON.stringify(fb)); } };
+    const saveObj = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+    let cfg = Object.assign({}, DEFAULT_APP_CONFIG, loadObj(STORE_KEY + "_cfg", {}));
+    const app = {
+      navTab: "home",
+      homeTab: "untukAnda",
+      searchSubTab: "populer",
+      msgFilter: "system",
+      privacyAccepted: loadObj(STORE_KEY + "_priv", false),
+      user: loadObj(STORE_KEY + "_user", null),
+      voucher: loadObj(STORE_KEY + "_voucher", null),
+      favorites: loadObj(STORE_KEY + "_fav", ["conan-ar"]),
+      likes: loadObj(STORE_KEY + "_likes", []),
+      history: loadObj(STORE_KEY + "_hist", [{ itemId: "conan-ar", sIdx: 0, epIdx: 0, at: Date.now() }]),
+      notifs: loadObj(STORE_KEY + "_notifs", [
+        { id: "ntf-welcome", category: "SYSTEM", title: "Selamat datang di Animedubar!", body: "Nikmati anime & film Dubbing Arab HD dengan Dual Subtitle Indonesia & Arab.", read: false, createdAt: Date.now() }
+      ]),
+      comments: loadObj(STORE_KEY + "_comments", {
+        "conan-ar": [
+          { id: "c1", user: "Animedubar Indonesia", verified: true, date: "11/10/2026", text: "Wow, dari opening dubbing Arab-nya aja udah keren banget! 🔥 Langsung puas rasanya nonton episode ini pakai Dual Subtitle ID + AR. Gimana menurut kalian?", likes: 43, top: true, replies: [{ user: "hikaru9162", text: "Audio dub Arab-nya jernih banget, cocok buat belajar bahasa Arab juga!" }] }
+        ]
+      }),
+      selectedPlanId: "quarterly",
+      payMethod: "QRIS",
+      watch: {
+        itemId: null, sIdx: 0, epIdx: 0, tab: "info", commSort: "top",
+        playing: false, demoSec: 12, demoDur: 1440, demoTimer: null,
+        hls: null, speed: 1, subMode: "dual", cropIdx: 0, isFs: false,
+        customSubs: { id: [], ar: [] }
+      }
+    };
+
+    const DEMO_SUBS = [
+      { ar: "مرحباً بكم في منصة أنمي دوبار — دبلجة عربية عالية الدقة", id: "Selamat datang di Animedubar — Dubbing Arab Kualitas HD" },
+      { ar: "الحقيقة دائماً واحدة مهما كانت الألغاز معقدة!", id: "Kebenaran selalu hanya satu, serumit apa pun misterinya!" },
+      { ar: "يمكنك تبديل الترجمة بين الإندونيسية والعربية بسهولة.", id: "Anda dapat mengganti subtitle Indonesia, Arab, atau Dual Sub kapan saja." }
+    ];
+
+    const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    const hasVip = () => Boolean((app.user && app.user.isVipActive) || (app.voucher && Date.now() < Number(app.voucher.expiresAt || 0)));
+
+    function toast(msg) {
+      const b = document.getElementById("toastBox");
+      if (!b) return;
+      b.textContent = msg;
+      b.classList.remove("hidden");
+      clearTimeout(window.__tTimer);
+      window.__tTimer = setTimeout(() => b.classList.add("hidden"), 2800);
+    }
+
+    function extractDriveId(v) {
+      const s = String(v || "").trim();
+      if (!s || /^DEMO_|^DIRECT_STREAM$/i.test(s)) return s;
+      const m1 = s.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/); if (m1) return m1[1];
+      const m2 = s.match(/[?&]id=([a-zA-Z0-9_-]{10,})/); if (m2) return m2[1];
+      return s;
+    }
+
+    function artHtml(item, isLandscape = true) {
+      const t = item.theme || { c1: "#1d4ed8", c2: "#0f172a" };
+      const img = isLandscape ? (item.backdropUrl || item.posterUrl) : (item.posterUrl || item.backdropUrl);
+      return `<div class="relative w-full h-full overflow-hidden" style="background:linear-gradient(135deg,${esc(t.c1)},${esc(t.c2)});">
+        ${img ? `<img src="${esc(img)}" alt="${esc(item.title)}" class="w-full h-full object-cover" onerror="this.remove()" loading="lazy"/>` : `
+          <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center">
+            <span dir="rtl" class="font-arabic text-amber-300 font-extrabold text-sm drop-shadow">${esc(item.arabicTitle || "")}</span>
+            <span class="text-white/90 font-extrabold text-xs mt-1 line-clamp-2">${esc(item.title)}</span>
+          </div>`}
+      </div>`;
+    }
+
+    /* =========================================================================
+       2. ONESIGNAL PUSH NOTIFICATIONS (NATIVE ANDROID APK + WEB FALLBACK)
+       ========================================================================= */
+    function initOneSignalPush() {
+      const appId = String(cfg.oneSignalAppId || "").trim();
+      if (!appId) return;
+      // A. Native Android Capacitor / Cordova OneSignal Plugin (Aktif Penuh di APK!)
+      if (window.plugins && window.plugins.OneSignal) {
+        try {
+          window.plugins.OneSignal.initialize(appId);
+          window.plugins.OneSignal.Notifications.requestPermission(true);
+          window.plugins.OneSignal.Notifications.addEventListener("click", (evt) => {
+            toast("Notifikasi dibuka: " + ((evt && evt.notification && evt.notification.title) || "Animedubar"));
+            switchNavTab("messages");
+          });
+          return;
+        } catch (e) { console.warn("OneSignal Native init:", e); }
+      }
+      // B. Web PWA Fallback
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.init({ appId, allowLocalhostAsSecureOrigin: true });
+        } catch {}
+      });
+    }
+
+    /* =========================================================================
+       3. IN-APP ISOLATED OFFLINE VAULT (INDEXEDDB — ANTI DOWNLOAD KE HP)
+       ========================================================================= */
+    const VAULT_DB = "AnimedubarBsVault_v1";
+    function openVaultDb() {
+      return new Promise((res, rej) => {
+        const r = indexedDB.open(VAULT_DB, 1);
+        r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains("eps")) r.result.createObjectStore("eps", { keyPath: "key" }); };
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+    }
+    async function vaultAll() {
+      try {
+        const db = await openVaultDb();
+        return await new Promise(res => {
+          const q = db.transaction("eps", "readonly").objectStore("eps").getAll();
+          q.onsuccess = () => res(q.result || []);
+          q.onerror = () => res([]);
+        });
+      } catch { return []; }
+    }
+    async function saveToVault(itemId, sIdx, epIdx) {
+      const q = cfg.offlineQuotas || { FREE: 0, monthly: 5, quarterly: 15, yearly: 50 };
+      const limit = hasVip() ? Number(q.monthly || 5) : Number(q.FREE || 0);
+      if (limit <= 0) { openVipSheet(); toast("Unduhan Dalam Aplikasi khusus Member Premium VIP!"); return; }
+      const list = await vaultAll();
+      const key = `${itemId}:${sIdx}:${epIdx}`;
+      if (list.some(x => x.key === key)) { toast("Episode sudah tersimpan di Unduhan Saya!"); return; }
+      if (list.length >= limit) { toast(`Kuota unduhan penuh (${list.length}/${limit} Eps).`); return; }
+      const item = cfg.catalog.find(c => c.id === itemId);
+      const ep = item && item.seasons[sIdx] && item.seasons[sIdx].episodes[epIdx];
+      if (!item || !ep) return;
+      const db = await openVaultDb();
+      await new Promise(res => {
+        const tx = db.transaction("eps", "readwrite");
+        tx.objectStore("eps").put({ key, itemId, sIdx, epIdx, title: item.title, ep: ep.ep, epTitle: ep.title, savedAt: Date.now() });
+        tx.oncomplete = res;
+      });
+      toast(`Tersimpan di Unduhan Saya (${list.length + 1}/${limit}) — hanya bisa diputar di dalam APK!`);
+      updateVaultBadge();
+    }
+    async function deleteVaultKey(key) {
+      const db = await openVaultDb();
+      await new Promise(res => {
+        const tx = db.transaction("eps", "readwrite");
+        tx.objectStore("eps").delete(key);
+        tx.oncomplete = res;
+      });
+      openDownloadsSheet();
+      updateVaultBadge();
+    }
+    async function updateVaultBadge() {
+      const list = await vaultAll();
+      const el = document.getElementById("profVaultCountBadge");
+      if (el) el.textContent = String(list.length);
+    }
+
+    /* =========================================================================
+       4. UNIVERSAL SUBTITLE PARSER (.ass / .ssa / .srt / .vtt / .sbv / .sub)
+       ========================================================================= */
+    function parseSubTime(ts) {
+      const p = String(ts || "").trim().replace(",", ".").split(":").map(Number);
+      return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : (p.length === 2 ? p[0]*60 + p[1] : 0);
+    }
+    function parseUniversalSub(raw, name = "") {
+      const txt = String(raw || "").replace(/^\uFEFF/, "").replace(/\r/g, "");
+      const ext = String(name).toLowerCase();
+      const cues = [];
+      if (ext.endsWith(".ass") || ext.endsWith(".ssa") || (/\[Events\]/i.test(txt) && /Dialogue:/i.test(txt))) {
+        txt.split("\n").forEach(l => {
+          if (!/^Dialogue:/i.test(l)) return;
+          const c = l.replace(/^Dialogue:\s*/i, "").split(",");
+          if (c.length >= 10) cues.push({ start: parseSubTime(c[1]), end: parseSubTime(c[2]), text: c.slice(9).join(",").replace(/\{[^}]*\}/g,"").replace(/\\N|\\n/g," ").trim() });
+        });
+        return cues.filter(x => x.text).sort((a,b) => a.start - b.start);
+      }
+      txt.split(/\n\n+/).forEach(blk => {
+        const lines = blk.split("\n").map(l => l.trim()).filter(Boolean);
+        const ti = lines.findIndex(l => l.includes("-->"));
+        if (ti === -1) return;
+        const m = lines[ti].match(/([0-9:.,]+)\s*-->\s*([0-9:.,]+)/);
+        if (!m) return;
+        const text = lines.slice(ti + 1).join(" ").replace(/<[^>]+>/g, "").trim();
+        if (text) cues.push({ start: parseSubTime(m[1]), end: parseSubTime(m[2]), text });
+      });
+      return cues.sort((a,b) => a.start - b.start);
+    }
+
+    /* =========================================================================
+       5. NAVIGATION & RENDERING (PERSIS 10 GAMBAR BSTATION!)
+       ========================================================================= */
+    function acceptPrivacyAgreement() {
+      app.privacyAccepted = true;
+      saveObj(STORE_KEY + "_priv", true);
+      closeOverlay("privacyModal");
+      initOneSignalPush();
+      if (!app.user) setTimeout(() => openLoginSheet(), 350);
+    }
+
+    function switchNavTab(tab) {
+      app.navTab = tab;
+      document.querySelectorAll(".app-view").forEach(v => v.classList.add("hidden"));
+      const active = document.getElementById("view-" + tab);
+      if (active) active.classList.remove("hidden");
+
+      document.querySelectorAll(".bnav-btn").forEach(btn => {
+        const isAct = btn.getAttribute("data-nav") === tab;
+        btn.className = "bnav-btn flex flex-col items-center gap-0.5 relative " + (isAct ? "text-[#18191C] font-extrabold" : "text-[#61666D] font-semibold");
+      });
+      const hf = document.querySelector(".bnav-home-fill");
+      if (hf) hf.setAttribute("fill", tab === "home" ? "#FFE58F" : "transparent");
+      const sf = document.querySelector(".bnav-search-fill");
+      if (sf) sf.setAttribute("fill", tab === "search" ? "#8CE0FF" : "transparent");
+      const mh = document.querySelector(".bnav-msg-heart");
+      if (mh) mh.setAttribute("fill", tab === "messages" ? "#FB7299" : "currentColor");
+
+      if (tab === "home") renderHomeFeed();
+      if (tab === "search") renderSearchScreen();
+      if (tab === "messages") renderMessagesScreen();
+      if (tab === "profile") renderProfileScreen();
+      window.scrollTo(0, 0);
+    }
+
+    function openSearchFromBar() {
+      switchNavTab("search");
+      setTimeout(() => { const inp = document.getElementById("searchInput"); if (inp) inp.focus(); }, 100);
+    }
+
+    function setHomeTab(ht) {
+      app.homeTab = ht;
+      document.querySelectorAll(".htab-btn").forEach(btn => {
+        const act = btn.getAttribute("data-htab") === ht;
+        const lbl = btn.textContent.trim();
+        btn.className = act ? "htab-btn shrink-0 text-[#18191C] font-extrabold relative" : "htab-btn shrink-0 text-[#61666D] font-semibold";
+        btn.innerHTML = act ? `<span>${esc(lbl)}</span><div class="bs-tab-curve"></div>` : `<span>${esc(lbl)}</span>`;
+      });
+      renderHomeFeed();
+    }
+
+    function renderHomeFeed() {
+      const box = document.getElementById("homeFeedContainer");
+      if (!box) return;
+      let list = [...(cfg.catalog || [])];
+      if (app.homeTab === "anime") list = list.filter(c => c.type !== "movie");
+      else if (app.homeTab === "movie") list = list.filter(c => c.type === "movie");
+      else if (app.homeTab === "ikuti") list = list.filter(c => app.favorites.includes(c.id));
+
+      const ph = document.getElementById("homeSearchPlaceholder");
+      if (ph && cfg.catalog[0]) ph.textContent = cfg.catalog[0].title;
+
+      if (!list.length) {
+        box.innerHTML = `<div class="py-16 text-center text-sm text-[#9499A0]">Belum ada tayangan di tab ini.</div>`;
+        return;
+      }
+
+      const feedCards = list.map(item => {
+        const ep1 = item.seasons && item.seasons[0] && item.seasons[0].episodes[0];
+        const dur = (ep1 && ep1.duration) || "24:00";
+        const likes = item.likes || 147;
+        return `
+          <article onclick="openWatchScreen('${esc(item.id)}', 0, 0)" class="space-y-2.5 cursor-pointer active:opacity-90 transition">
+            <div class="relative aspect-video w-full rounded-xl overflow-hidden bg-gray-100 shadow-sm">
+              ${artHtml(item, true)}
+              <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-md bg-white/95 text-[#18191C] text-[11px] font-bold shadow">${likes} Suka</span>
+              <span class="absolute bottom-2 right-2.5 px-1.5 py-0.5 rounded bg-black/70 text-white text-[11px] font-mono font-semibold">${esc(dur)}</span>
+              ${item.isVip ? `<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-bsPink text-white text-[10px] font-extrabold">Premium</span>` : ""}
+            </div>
+            <div class="flex items-start justify-between gap-2 px-0.5">
+              <div class="min-w-0 space-y-1">
+                <h3 class="text-[15px] font-bold text-[#18191C] leading-snug line-clamp-2">${esc(item.title)}</h3>
+                <div class="flex items-center gap-2 text-[12px] text-[#61666D]">
+                  <span class="w-5 h-5 rounded-full bg-[#18191C] text-white text-[9px] font-black flex items-center justify-center shrink-0">A</span>
+                  <span class="truncate">${esc(item.channel || "Animedubar Official")}</span>
+                  <span dir="rtl" class="font-arabic text-[11px] text-[#00AEEC] truncate">${esc(item.arabicTitle || "")}</span>
+                </div>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); toggleFavorite('${esc(item.id)}')" class="p-1 text-[#9499A0] text-lg leading-none">⋮</button>
+            </div>
+          </article>`;
+      }).join("");
+
+      const animeList = (cfg.catalog || []).filter(c => c.type !== "movie").slice(0, 6);
+      const animeRow = `
+        <div class="pt-2 border-t border-gray-100 space-y-3">
+          <button type="button" onclick="switchNavTab('search'); setSearchSubTab('anime');" class="w-full flex items-center justify-between">
+            <h2 class="text-[17px] font-extrabold text-[#18191C]">Anime</h2>
+            <span class="text-[#61666D] text-lg">›</span>
+          </button>
+          <div class="grid grid-cols-3 gap-2.5">
+            ${animeList.map(a => `
+              <div onclick="openWatchScreen('${esc(a.id)}', 0, 0)" class="cursor-pointer space-y-1.5">
+                <div class="aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 relative">
+                  ${artHtml(a, false)}
+                  ${a.isVip ? `<span class="absolute top-1 right-1 px-1.5 py-0.5 rounded bg-bsPink text-white text-[8.5px] font-extrabold">VIP</span>` : ""}
+                </div>
+                <p class="text-[12px] font-semibold text-[#18191C] leading-tight line-clamp-2">${esc(a.title)}</p>
+              </div>`).join("")}
+          </div>
+        </div>`;
+
+      box.innerHTML = feedCards + animeRow;
+    }
+
+    /* ----- SEARCH SCREEN (PERSIS GAMBAR 5 & 6) ----- */
+    function setSearchSubTab(st) {
+      app.searchSubTab = st;
+      document.querySelectorAll(".stab-btn").forEach(btn => {
+        const act = btn.getAttribute("data-stab") === st;
+        btn.className = act
+          ? "stab-btn py-3 shrink-0 font-extrabold text-[#18191C] border-b-[2.5px] border-[#18191C]"
+          : "stab-btn py-3 shrink-0 font-semibold text-[#9499A0] border-b-[2.5px] border-transparent";
+      });
+      // Show back arrow & "Cari" button when in Anime grid tab (persis image_8ee174.jpg)
+      const isAnime = st === "anime";
+      document.getElementById("searchBackBtn").classList.toggle("hidden", !isAnime);
+      document.getElementById("searchGoTextBtn").classList.toggle("hidden", !isAnime);
+      renderSearchScreen();
+    }
+
+    function shuffleTrending() {
+      cfg.catalog.sort(() => Math.random() - 0.5);
+      renderSearchScreen();
+    }
+
+    function renderSearchScreen() {
+      const q = ((document.getElementById("searchInput") || {}).value || "").trim().toLowerCase();
+      document.getElementById("searchClearBtn").classList.toggle("hidden", !q);
+
+      // Trending 2-Column List with BARU / PANAS / TOP pastel tags
+      const tGrid = document.getElementById("trendingKeywordsGrid");
+      if (tGrid) {
+        const tags = [
+          { label: "BARU", cls: "bg-[#E6F7FF] text-[#00AEEC]" },
+          { label: "", cls: "" },
+          { label: "PANAS", cls: "bg-[#FFF2E8] text-[#FA8C16]" },
+          { label: "TOP", cls: "bg-[#F54949] text-white" },
+          { label: "PANAS", cls: "bg-[#FFF2E8] text-[#FA8C16]" },
+          { label: "", cls: "" }
+        ];
+        const kws = (cfg.catalog || []).slice(0, 6);
+        tGrid.innerHTML = kws.map((it, idx) => {
+          const tg = tags[idx] || { label: "", cls: "" };
+          return `<button type="button" onclick="document.getElementById('searchInput').value='${esc(it.title.split(" ")[0])}'; renderSearchScreen();" class="flex items-center gap-1.5 text-left min-w-0">
+            <span class="truncate text-[#18191C] font-medium">${esc(it.title)}</span>
+            ${tg.label ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold shrink-0 ${tg.cls}">${tg.label}</span>` : ""}
+          </button>`;
+        }).join("");
+      }
+
+      let list = [...(cfg.catalog || [])];
+      if (q) {
+        list = list.filter(i => (i.title || "").toLowerCase().includes(q) || (i.arabicTitle || "").toLowerCase().includes(q) || (i.genres || []).join(" ").toLowerCase().includes(q));
+      } else {
+        if (app.searchSubTab === "anime") list = list.filter(i => i.type !== "movie");
+        if (app.searchSubTab === "movie") list = list.filter(i => i.type === "movie");
+        if (app.searchSubTab === "vip") list = list.filter(i => i.isVip);
+      }
+
+      const body = document.getElementById("searchResultsBody");
+      if (!body) return;
+      if (!list.length) {
+        body.innerHTML = `<div class="py-12 text-center text-sm text-[#9499A0]">Tidak ditemukan judul untuk "${esc(q)}".</div>`;
+        return;
+      }
+
+      // Tab Anime -> 3-Column Portrait Grid (Persis image_8ee174.jpg)
+      if (app.searchSubTab === "anime" && !q) {
+        body.innerHTML = `<div class="grid grid-cols-3 gap-2.5">
+          ${list.map(it => `
+            <div onclick="openWatchScreen('${esc(it.id)}', 0, 0)" class="cursor-pointer space-y-1.5">
+              <div class="aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 relative">
+                ${artHtml(it, false)}
+                ${it.isVip ? `<span class="absolute top-1 right-1 px-1.5 py-0.5 rounded bg-bsPink text-white text-[8.5px] font-extrabold">VIP</span>` : ""}
+              </div>
+              <p class="text-[12.5px] font-semibold text-[#18191C] leading-snug line-clamp-2">${esc(it.title)}</p>
+            </div>`).join("")}
+        </div>`;
+        return;
+      }
+
+      // Tab Populer & Default -> Horizontal Row List (Persis image_8ee157.jpg)
+      body.innerHTML = `<div class="space-y-3.5">
+        ${list.map(it => {
+          const ep1 = it.seasons && it.seasons[0] && it.seasons[0].episodes[0];
+          return `
+            <div onclick="openWatchScreen('${esc(it.id)}', 0, 0)" class="flex gap-3 cursor-pointer active:opacity-80">
+              <div class="relative w-[136px] aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                ${artHtml(it, true)}
+                <span class="absolute bottom-1 right-1.5 px-1 py-0.5 rounded bg-black/70 text-white text-[10px] font-mono">${esc((ep1 && ep1.duration) || "24:00")}</span>
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                <h4 class="text-[14px] font-semibold text-[#18191C] leading-snug line-clamp-2">${esc(it.title)}</h4>
+                <div class="flex items-center gap-1.5 text-[11.5px] text-[#9499A0]">
+                  <span class="border border-[#C9CDD4] rounded px-1 text-[9px]">▶</span>
+                  <span>${esc(it.views || "13.2K")} Views</span>
+                </div>
+              </div>
+            </div>`;
+        }).join("")}
+      </div>`;
+    }
+
+    /* ----- MESSAGES / PESAN SCREEN (PERSIS image_8ee13b.png) ----- */
+    function setMsgFilter(f) {
+      app.msgFilter = f;
+      renderMessagesScreen();
+    }
+
+    function updateUnreadBadges() {
+      const cnt = (app.notifs || []).filter(n => !n.read).length;
+      ["navMsgBadge", "msgSysBadge"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = cnt > 99 ? "99+" : String(cnt);
+        el.classList.toggle("hidden", cnt === 0);
+      });
+    }
+
+    function renderMessagesScreen() {
+      updateUnreadBadges();
+      const box = document.getElementById("messagesListBody");
+      if (!box) return;
+      const list = app.msgFilter === "system" ? (app.notifs || []) : [];
+
+      const itemsHtml = list.map(n => `
+        <div onclick="markNotifRead('${esc(n.id)}')" class="p-3.5 rounded-xl border ${n.read ? "border-gray-100 bg-white" : "border-[#D6F0FF] bg-[#F5FBFF]"} space-y-1 cursor-pointer">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="font-extrabold text-[#00AEEC]">${esc(n.category || "SISTEM")}</span>
+            <span class="text-[#9499A0]">${new Date(n.createdAt || Date.now()).toLocaleDateString("id-ID")}</span>
+          </div>
+          <p class="text-[13.5px] font-bold text-[#18191C]">${esc(n.title)}</p>
+          <p class="text-[12px] text-[#61666D] leading-relaxed">${esc(n.body)}</p>
+        </div>`).join("");
+
+      const emptyMascot = `
+        <div class="py-16 flex flex-col items-center justify-center text-center gap-3">
+          <svg class="w-36 h-32" viewBox="0 0 180 150" fill="none">
+            <ellipse cx="90" cy="134" rx="52" ry="8" fill="#232533" opacity="0.85"/>
+            <rect x="64" y="88" width="52" height="36" rx="4" fill="#B58969" stroke="#18191C" stroke-width="2.2"/>
+            <rect x="64" y="24" width="54" height="44" rx="12" fill="#FFFFFF" stroke="#18191C" stroke-width="2.4"/>
+            <path d="M80 14 L86 24 M102 14 L96 24" stroke="#18191C" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="80" cy="46" r="5" stroke="#18191C" stroke-width="2"/>
+            <circle cx="101" cy="46" r="8" fill="#E6F7FF" stroke="#18191C" stroke-width="2.2"/>
+            <path d="M107 52 L117 64" stroke="#18191C" stroke-width="3" stroke-linecap="round"/>
+            <rect x="74" y="68" width="34" height="22" rx="6" fill="#1BB3F5" stroke="#18191C" stroke-width="2"/>
+          </svg>
+          <p class="text-[14px] text-[#7A7E87] font-medium">No more content</p>
+        </div>`;
+
+      box.innerHTML = itemsHtml + emptyMascot;
+    }
+
+    function markNotifRead(id) {
+      const n = (app.notifs || []).find(x => x.id === id);
+      if (n) { n.read = true; saveObj(STORE_KEY + "_notifs", app.notifs); renderMessagesScreen(); }
+    }
+
+    /* ----- PROFILE / SAYA SCREEN (PERSIS image_8ee11e.jpg & image_8ee195.jpg) ----- */
+    function renderProfileScreen() {
+      const name = (app.user && (app.user.displayName || app.user.email)) || "Akun Animedubar";
+      document.getElementById("profUserName").textContent = name;
+      document.getElementById("profAvatarInitial").textContent = name.charAt(0).toUpperCase();
+      document.getElementById("profFollowCount").textContent = String(app.favorites.length);
+      document.getElementById("profFavCountBadge").textContent = String(app.favorites.length);
+
+      const vip = hasVip();
+      const tierEl = document.getElementById("profTierPill");
+      tierEl.textContent = vip ? "💎 Premium Aktif" : "💎 Gratis";
+      tierEl.className = vip
+        ? "px-2.5 py-1 rounded-full bg-[#FFF0F5] text-bsPink font-bold inline-flex items-center gap-1"
+        : "px-2.5 py-1 rounded-full bg-[#F4F5F7] text-[#61666D] inline-flex items-center gap-1";
+      document.getElementById("profVipTitle").textContent = vip ? "Premium VIP Aktif" : "Jadi Premium";
+      document.getElementById("profVipSub").textContent = vip ? "Semua anime & film Dub Arab HD terbuka" : "Premium dapat menonton banyak anime baru";
+
+      const strip = document.getElementById("profHistoryStrip");
+      if (strip) {
+        const cards = [];
+        const histItems = (app.history || []).slice(0, 3);
+        histItems.forEach(h => {
+          const it = cfg.catalog.find(c => c.id === h.itemId);
+          if (!it) return;
+          cards.push(`
+            <div onclick="openWatchScreen('${esc(it.id)}', ${h.sIdx||0}, ${h.epIdx||0})" class="cursor-pointer space-y-1">
+              <div class="relative aspect-video rounded-lg overflow-hidden bg-gray-100">
+                ${artHtml(it, true)}
+                <span class="absolute top-1 right-1 px-1.5 py-0.5 rounded bg-bsBlue text-white text-[9px] font-extrabold">${it.type === "movie" ? "Film" : "Anime"}</span>
+                <span class="absolute bottom-1 right-1 px-1 rounded bg-black/70 text-white text-[9px] font-bold">E ${(h.epIdx||0)+1}</span>
+              </div>
+              <p class="text-[11.5px] font-semibold text-[#18191C] truncate">${esc(it.title)}</p>
+            </div>`);
+        });
+        while (cards.length < 3) {
+          cards.push(`<div class="aspect-video rounded-lg bg-[#F4F5F7] flex items-center justify-center text-[#D4D7DD]">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none"><path d="M8 5l2 2M16 5l-2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="4" y="7" width="16" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="9.5" cy="13" r="1.1" fill="currentColor"/><circle cx="14.5" cy="13" r="1.1" fill="currentColor"/></svg>
+          </div>`);
+        }
+        strip.innerHTML = cards.join("");
+      }
+      updateVaultBadge();
+    }
+
+    /* =========================================================================
+       6. WATCH SCREEN & 100% FULLSCREEN NETFLIX CINEMA PLAYER
+       (PERSIS GAMBAR image_8ee1b1.jpg & image_8ee1b9.jpg)
+       ========================================================================= */
+    function openWatchScreen(itemId, sIdx = 0, epIdx = 0) {
+      const item = cfg.catalog.find(c => c.id === itemId);
+      if (!item) return;
+      const season = (item.seasons && item.seasons[sIdx]) || item.seasons[0];
+      const ep = (season && season.episodes && season.episodes[epIdx]) || season.episodes[0];
+      if (!ep) return;
+
+      if ((item.isVip || ep.isVip) && !hasVip()) {
+        openVipSheet();
+        toast(`"${item.title}" khusus Member Premium VIP!`);
+        return;
+      }
+
+      stopWatchMedia();
+      app.watch.itemId = item.id;
+      app.watch.sIdx = sIdx;
+      app.watch.epIdx = epIdx;
+      app.watch.playing = true;
+      app.watch.demoSec = 10;
+
+      // Auto-load subtitles synced from Panel CMS
+      app.watch.customSubs = { id: [], ar: [] };
+      if (ep.subIdText) app.watch.customSubs.id = parseUniversalSub(ep.subIdText, "srv_id.srt");
+      if (ep.subArText) app.watch.customSubs.ar = parseUniversalSub(ep.subArText, "srv_ar.srt");
+      if (!app.watch.customSubs.id.length && ep.subIdUrl) fetch(ep.subIdUrl).then(r=>r.text()).then(t => app.watch.customSubs.id = parseUniversalSub(t, ep.subIdUrl)).catch(()=>{});
+      if (!app.watch.customSubs.ar.length && ep.subArUrl) fetch(ep.subArUrl).then(r=>r.text()).then(t => app.watch.customSubs.ar = parseUniversalSub(t, ep.subArUrl)).catch(()=>{});
+
+      // Save to history
+      app.history = [{ itemId: item.id, sIdx, epIdx, at: Date.now() }, ...app.history.filter(x => x.itemId !== item.id)].slice(0, 20);
+      saveObj(STORE_KEY + "_hist", app.history);
+
+      document.getElementById("watchScreen").classList.remove("hidden");
+      document.getElementById("watchVipPromoBar").classList.toggle("hidden", hasVip());
+      setWatchSubTab("info");
+      startWatchMedia(item, ep);
+    }
+
+    function startWatchMedia(item, ep) {
+      const v = document.getElementById("watchVideo");
+      const ifrW = document.getElementById("watchIframeWrap");
+      const ifr = document.getElementById("watchIframe");
+      const demoW = document.getElementById("watchDemoWrap");
+
+      v.classList.add("hidden"); ifrW.classList.add("hidden"); demoW.classList.add("hidden");
+      ifr.src = "";
+
+      const direct = String(ep.hlsUrl || "").trim();
+      const driveId = extractDriveId(ep.driveSubId || "");
+      const isDirect = Boolean(direct && /^https?:\/\//i.test(direct));
+      const isDrive = Boolean(!isDirect && driveId && !/^DEMO_|^DIRECT_STREAM$/i.test(driveId));
+
+      if (isDirect) {
+        v.classList.remove("hidden");
+        if (window.Hls && window.Hls.isSupported() && direct.includes(".m3u8")) {
+          app.watch.hls = new window.Hls();
+          app.watch.hls.loadSource(direct);
+          app.watch.hls.attachMedia(v);
+          app.watch.hls.on(window.Hls.Events.MANIFEST_PARSED, () => v.play().catch(()=>{}));
+        } else {
+          v.src = direct;
+          v.play().catch(()=>{});
+        }
+        v.playbackRate = app.watch.speed;
+        v.ontimeupdate = () => {
+          const cur = v.currentTime || 0, dur = v.duration || 1440;
+          const pct = (cur / dur) * 100;
+          document.getElementById("watchSeek").value = pct;
+          document.getElementById("fsSeekBar").value = pct;
+          const f = s => String(Math.floor(s/60)).padStart(2,"0") + ":" + String(Math.floor(s%60)).padStart(2,"0");
+          document.getElementById("watchTimeTxt").textContent = `${f(cur)}/${f(dur)}`;
+          document.getElementById("fsTimeLbl").textContent = "-" + f(Math.max(0, dur - cur));
+          paintDualSubs(cur);
+        };
+      } else if (isDrive) {
+        ifrW.classList.remove("hidden");
+        ifr.src = `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview`;
+      } else {
+        demoW.classList.remove("hidden");
+        document.getElementById("watchDemoBg").innerHTML = artHtml(item, true);
+        paintDualSubs(app.watch.demoSec);
+        app.watch.demoTimer = setInterval(() => {
+          if (!app.watch.playing) return;
+          app.watch.demoSec = (app.watch.demoSec + app.watch.speed) % app.watch.demoDur;
+          const pct = (app.watch.demoSec / app.watch.demoDur) * 100;
+          document.getElementById("watchSeek").value = pct;
+          document.getElementById("fsSeekBar").value = pct;
+          const f = s => String(Math.floor(s/60)).padStart(2,"0") + ":" + String(Math.floor(s%60)).padStart(2,"0");
+          document.getElementById("watchTimeTxt").textContent = `${f(app.watch.demoSec)}/${f(app.watch.demoDur)}`;
+          document.getElementById("fsTimeLbl").textContent = "-" + f(app.watch.demoDur - app.watch.demoSec);
+          paintDualSubs(app.watch.demoSec);
+        }, 1000);
+      }
+    }
+
+    function paintDualSubs(sec) {
+      const m = app.watch.subMode;
+      const arIds = ["watchSubAr", "fsSubAr"];
+      const idIds = ["watchSubId", "fsSubId"];
+      if (m === "off") { [...arIds, ...idIds].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; }); return; }
+      const idx = Math.floor(sec / 5) % DEMO_SUBS.length;
+      const cueAr = app.watch.customSubs.ar.length ? (app.watch.customSubs.ar.find(c => sec >= c.start && sec <= c.end)?.text || "") : DEMO_SUBS[idx].ar;
+      const cueId = app.watch.customSubs.id.length ? (app.watch.customSubs.id.find(c => sec >= c.start && sec <= c.end)?.text || "") : DEMO_SUBS[idx].id;
+      arIds.forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = cueAr; el.style.display = (m === "dual" || m === "ar") && cueAr ? "inline-block" : "none"; } });
+      idIds.forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = cueId; el.style.display = (m === "dual" || m === "id") && cueId ? "inline-block" : "none"; } });
+    }
+
+    function stopWatchMedia() {
+      clearInterval(app.watch.demoTimer);
+      if (app.watch.hls) { app.watch.hls.destroy(); app.watch.hls = null; }
+      const v = document.getElementById("watchVideo");
+      if (v) { v.pause(); v.removeAttribute("src"); }
+      const ifr = document.getElementById("watchIframe");
+      if (ifr) ifr.src = "";
+    }
+
+    function closeWatchScreen() {
+      closeFullscreenCinema();
+      stopWatchMedia();
+      document.getElementById("watchScreen").classList.add("hidden");
+      if (app.navTab === "profile") renderProfileScreen();
+    }
+
+    function setWatchSubTab(tab) {
+      app.watch.tab = tab;
+      document.getElementById("wTabInfoBtn").className = tab === "info" ? "py-3 text-[15px] font-extrabold text-[#18191C] border-b-[2.5px] border-[#18191C]" : "py-3 text-[15px] font-bold text-[#61666D] border-b-[2.5px] border-transparent";
+      document.getElementById("wTabCommBtn").className = tab === "comments" ? "py-3 text-[15px] font-extrabold text-[#18191C] border-b-[2.5px] border-[#18191C]" : "py-3 text-[15px] font-bold text-[#61666D] border-b-[2.5px] border-transparent";
+      document.getElementById("watchPaneInfo").classList.toggle("hidden", tab !== "info");
+      document.getElementById("watchPaneComments").classList.toggle("hidden", tab !== "comments");
+      document.getElementById("watchCommentForm").classList.toggle("hidden", tab !== "comments");
+      if (tab === "info") renderWatchInfoPane();
+      else renderWatchCommentsPane();
+    }
+
+    function renderWatchInfoPane() {
+      const w = app.watch;
+      const item = cfg.catalog.find(c => c.id === w.itemId);
+      const pane = document.getElementById("watchPaneInfo");
+      if (!item || !pane) return;
+      const season = (item.seasons && item.seasons[w.sIdx]) || item.seasons[0];
+      const eps = season.episodes || [];
+      const isFav = app.favorites.includes(item.id);
+      const isLiked = app.likes.includes(item.id);
+      const recs = cfg.catalog.filter(c => c.id !== item.id).slice(0, 4);
+
+      pane.innerHTML = `
+        <div class="space-y-2.5">
+          <h1 class="text-[19px] font-extrabold text-[#18191C] leading-snug">${esc(item.title)}</h1>
+          <div class="flex items-center justify-between text-[12.5px] text-[#61666D]">
+            <span>▶ ${esc(item.views || "8.3M")} · Dubbing Arab &amp; Dual Subtitle</span>
+            <span>›</span>
+          </div>
+          <div>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md ${item.isVip ? "bg-[#FFF0F5] text-bsPink" : "bg-[#E6F7FF] text-[#00AEEC]"} text-[11.5px] font-bold">
+              ${item.isVip ? "💎 Prioritas Premium" : "✔ Gratis · Dual Subtitle"}
+            </span>
+          </div>
+          <div class="px-3.5 py-2.5 rounded-xl bg-[#FFF9EB] flex items-center justify-between text-[13px] font-bold text-[#C88820]">
+            <span>🏆 Umum Top ${item.topRank || 1}</span>
+            <span>›</span>
+          </div>
+        </div>
+
+        <!-- 4 Action Icons (Persis image_8ee1b1.jpg) -->
+        <div class="grid grid-cols-4 gap-2 py-2 text-center text-[11.5px] text-[#61666D] font-semibold">
+          <button type="button" onclick="toggleLike('${esc(item.id)}')" class="flex flex-col items-center gap-1 ${isLiked ? "text-bsBlue" : ""}">
+            <span class="text-xl">👍</span><span>${(item.likes || 480) + (isLiked ? 1 : 0)}</span>
+          </button>
+          <button type="button" onclick="toggleFavorite('${esc(item.id)}')" class="flex flex-col items-center gap-1 ${isFav ? "text-bsPink" : ""}">
+            <span class="text-xl">🔖</span><span>${isFav ? "Tersimpan" : "Favorit"}</span>
+          </button>
+          <button type="button" onclick="saveToVault('${esc(item.id)}', ${w.sIdx}, ${w.epIdx})" class="flex flex-col items-center gap-1">
+            <span class="text-xl">⬇️</span><span>Unduh</span>
+          </button>
+          <button type="button" onclick="shareCurrentItem('${esc(item.title)}')" class="flex flex-col items-center gap-1">
+            <span class="text-xl">↪️</span><span>Bagikan</span>
+          </button>
+        </div>
+
+        <!-- Semua Episode + Season + Square Number Buttons (Persis image_8ee1b1.jpg) -->
+        <div class="space-y-3 pt-1">
+          <div class="flex items-center justify-between">
+            <h2 class="text-[16px] font-extrabold text-[#18191C]">Semua episode</h2>
+            <span class="text-[12.5px] text-[#61666D] font-semibold">Terbaru EP ${eps.length} ›</span>
+          </div>
+          <div class="flex items-center gap-4 text-[14px]">
+            ${(item.seasons || []).map((sn, idx) => `<button type="button" onclick="openWatchScreen('${esc(item.id)}', ${idx}, 0)" class="${idx === w.sIdx ? "font-extrabold text-[#18191C]" : "font-semibold text-[#9499A0]"}">${esc(sn.title || ("S"+(idx+1)))}</button>`).join("")}
+          </div>
+          <div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+            ${eps.map((ep, idx) => {
+              const act = idx === w.epIdx;
+              return `<button type="button" onclick="openWatchScreen('${esc(item.id)}', ${w.sIdx}, ${idx})" class="w-12 h-12 rounded-xl shrink-0 font-extrabold text-[14px] relative flex items-center justify-center ${act ? "bg-[#E6F7FF] text-[#00AEEC] border border-[#00AEEC]/30" : "bg-[#F4F5F7] text-[#18191C]"}">
+                ${ep.ep}
+                ${ep.isVip ? `<span class="absolute -top-1 -right-1 px-1 rounded bg-bsPink text-white text-[8px] font-black">VIP</span>` : ""}
+              </button>`;
+            }).join("")}
+          </div>
+        </div>
+
+        <!-- Direkomendasikan Untukmu -->
+        <div class="space-y-3 pt-2 border-t border-gray-100">
+          <h2 class="text-[16px] font-extrabold text-[#18191C]">Direkomendasikan untukmu</h2>
+          <div class="space-y-3">
+            ${recs.map(r => `
+              <div onclick="openWatchScreen('${esc(r.id)}', 0, 0)" class="flex gap-3 cursor-pointer">
+                <div class="w-32 aspect-video rounded-lg overflow-hidden bg-gray-100 shrink-0">${artHtml(r, true)}</div>
+                <div class="min-w-0 flex-1 flex flex-col justify-between py-0.5">
+                  <p class="text-[13.5px] font-bold text-[#18191C] line-clamp-2">${esc(r.title)}</p>
+                  <p class="text-[11px] text-[#9499A0]">${esc(r.views || "12K")} Views · Dub Arab</p>
+                </div>
+              </div>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    function renderWatchCommentsPane() {
+      const pane = document.getElementById("watchPaneComments");
+      const list = app.comments[app.watch.itemId] || [
+        { id: "def1", user: "Animedubar Indonesia", verified: true, date: "Baru saja", text: "Selamat menonton! Gunakan tombol Layar Penuh untuk mengaktifkan Dual Subtitle Arab & Indonesia 🔥", likes: 28, top: true, replies: [] }
+      ];
+      document.getElementById("watchCommCount").textContent = String(list.length);
+      pane.innerHTML = `
+        <div class="px-4 py-3 flex items-center gap-5 text-[13.5px]">
+          <button type="button" onclick="app.watch.commSort='top'; renderWatchCommentsPane();" class="${app.watch.commSort==='top' ? "font-extrabold text-[#18191C]" : "font-semibold text-[#9499A0]"}">Terbaik</button>
+          <button type="button" onclick="app.watch.commSort='new'; renderWatchCommentsPane();" class="${app.watch.commSort==='new' ? "font-extrabold text-[#18191C]" : "font-semibold text-[#9499A0]"}">Terbaru</button>
+        </div>
+        <div class="px-4 space-y-4">
+          ${list.map(c => `
+            <div class="space-y-2 pb-3 border-b border-gray-100">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full ${c.verified ? "bg-bsBlue text-white" : "bg-[#E8EAED] text-[#18191C]"} font-extrabold text-xs flex items-center justify-center">${esc(c.user.charAt(0).toUpperCase())}</div>
+                <div class="text-[12.5px]">
+                  <span class="font-bold ${c.verified ? "text-bsPink" : "text-[#18191C]"}">${esc(c.user)}</span>
+                  ${c.verified ? `<span class="inline-block ml-1 px-1 rounded-full bg-bsBlue text-white text-[9px]">✓</span>` : ""}
+                  <span class="text-[#9499A0] ml-1.5 text-[11px]">· ${esc(c.date)}</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl ${c.top ? "bg-[#F1FBE9]" : "bg-[#F7F8FA]"} text-[13.5px] text-[#18191C] leading-relaxed">
+                ${esc(c.text)}
+              </div>
+              <div class="flex items-center gap-5 text-[12px] text-[#61666D]">
+                <span>👍 ${c.likes || 0}</span>
+                <span>👎</span>
+                <span>💬 ${(c.replies || []).length}</span>
+                ${c.top ? `<span class="px-1.5 py-0.5 rounded bg-[#FFF2E8] text-[#FA8C16] text-[10px] font-extrabold">TOP</span>` : ""}
+              </div>
+              ${(c.replies && c.replies.length) ? `
+                <div class="p-3 rounded-xl bg-[#F4F5F7] space-y-1 text-[12.5px]">
+                  <p><strong class="text-[#61666D]">${esc(c.replies[0].user)}</strong></p>
+                  <p class="text-[#18191C]">${esc(c.replies[0].text)}</p>
+                  <p class="text-[11px] text-[#9499A0] pt-0.5">Tinjau Semua ${c.replies.length} Balasan ›</p>
+                </div>` : ""}
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function submitWatchComment(e) {
+      e.preventDefault();
+      const inp = document.getElementById("watchCommentInput");
+      const txt = inp.value.trim();
+      if (!txt) return;
+      if (!app.comments[app.watch.itemId]) app.comments[app.watch.itemId] = [];
+      app.comments[app.watch.itemId].unshift({
+        id: "c-" + Date.now(),
+        user: (app.user && (app.user.displayName || app.user.email)) || "Pengguna Animedubar",
+        verified: false,
+        date: "Baru saja",
+        text: txt,
+        likes: 1,
+        top: false,
+        replies: []
+      });
+      saveObj(STORE_KEY + "_comments", app.comments);
+      inp.value = "";
+      renderWatchCommentsPane();
+      toast("Komentar terkirim!");
+    }
+
+    /* ----- FULLSCREEN NETFLIX CINEMA MODE ----- */
+    function openFullscreenCinema() {
+      const w = app.watch;
+      const item = cfg.catalog.find(c => c.id === w.itemId);
+      const ep = item && item.seasons[w.sIdx] && item.seasons[w.sIdx].episodes[w.epIdx];
+      if (!item || !ep) return;
+
+      const fs = document.getElementById("fsCinemaOverlay");
+      const slot = document.getElementById("fsMediaSlot");
+      // Move active media elements into fullscreen slot seamlessly without reloading stream!
+      ["watchVideo", "watchIframeWrap", "watchDemoWrap"].forEach(id => slot.appendChild(document.getElementById(id)));
+      document.getElementById("fsTitle").textContent = item.title;
+      document.getElementById("fsSubTitle").textContent = `S${w.sIdx+1}:E${ep.ep} · ${ep.title}`;
+      w.isFs = true;
+      fs.classList.remove("hidden");
+
+      if (fs.requestFullscreen) fs.requestFullscreen().catch(()=>{});
+      if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(()=>{});
+      showFsHud();
+    }
+
+    function closeFullscreenCinema() {
+      if (!app.watch.isFs) return;
+      const stage = document.getElementById("watchStage");
+      ["watchVideo", "watchIframeWrap", "watchDemoWrap"].forEach(id => stage.prepend(document.getElementById(id)));
+      app.watch.isFs = false;
+      document.getElementById("fsCinemaOverlay").classList.add("hidden");
+      if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+      if (screen.orientation && screen.orientation.unlock) { try { screen.orientation.unlock(); } catch {} }
+    }
+
+    function showFsHud() {
+      const hud = document.getElementById("fsHud");
+      if (!hud) return;
+      hud.style.opacity = "1"; hud.style.pointerEvents = "auto";
+      clearTimeout(window.__fsHudT);
+      window.__fsHudT = setTimeout(() => { hud.style.opacity = "0"; hud.style.pointerEvents = "none"; }, 3800);
+    }
+    function toggleFsHud() {
+      const hud = document.getElementById("fsHud");
+      if (hud.style.opacity === "0") showFsHud();
+      else { hud.style.opacity = "0"; hud.style.pointerEvents = "none"; }
+    }
+    function toggleWatchPlay() {
+      const v = document.getElementById("watchVideo");
+      if (!v.classList.contains("hidden")) {
+        if (v.paused) { v.play().catch(()=>{}); app.watch.playing = true; }
+        else { v.pause(); app.watch.playing = false; }
+      } else {
+        app.watch.playing = !app.watch.playing;
+      }
+      const sym = app.watch.playing ? "❚❚" : "▶";
+      document.getElementById("watchInlinePlayBtn").textContent = sym;
+      document.getElementById("fsBigPlayBtn").textContent = sym;
+    }
+    function skipWatchSeconds(d) {
+      const v = document.getElementById("watchVideo");
+      if (!v.classList.contains("hidden") && v.duration) v.currentTime = Math.min(v.duration, Math.max(0, v.currentTime + d));
+      else { app.watch.demoSec = Math.min(app.watch.demoDur, Math.max(0, app.watch.demoSec + d)); paintDualSubs(app.watch.demoSec); }
+      toast(d < 0 ? "↺ -10 detik" : "+10 detik ↻");
+    }
+    function seekWatchPercent(p) {
+      const v = document.getElementById("watchVideo");
+      if (!v.classList.contains("hidden") && v.duration) v.currentTime = (Number(p)/100)*v.duration;
+      else { app.watch.demoSec = (Number(p)/100)*app.watch.demoDur; paintDualSubs(app.watch.demoSec); }
+    }
+    function setFsBrightness(val) {
+      const b = Number(val) || 100;
+      document.getElementById("fsBrightLbl").textContent = b + "%";
+      document.getElementById("watchVideo").style.filter = `brightness(${b/100})`;
+      document.getElementById("fsDimmer").style.opacity = b < 100 ? String((100 - b) / 130) : "0";
+    }
+    function cycleFsCrop() {
+      const modes = [["object-contain","Asli"],["object-cover","Penuh"],["object-fill","Stretch"]];
+      app.watch.cropIdx = (app.watch.cropIdx + 1) % modes.length;
+      const v = document.getElementById("watchVideo");
+      v.classList.remove("object-contain","object-cover","object-fill");
+      v.classList.add(modes[app.watch.cropIdx][0]);
+      document.getElementById("watchIframe").style.transform = app.watch.cropIdx === 1 ? "scale(1.12)" : "scale(1)";
+      document.getElementById("fsCropLbl").textContent = modes[app.watch.cropIdx][1];
+      toast("Rasio: " + modes[app.watch.cropIdx][1]);
+    }
+    function toggleFsLock(lock) {
+      document.getElementById("fsLockOverlay").classList.toggle("hidden", !lock);
+      document.getElementById("fsUnlockBtn").classList.add("hidden");
+    }
+    function showFsUnlockBtn() {
+      const b = document.getElementById("fsUnlockBtn");
+      b.classList.remove("hidden");
+      clearTimeout(window.__fsUnl);
+      window.__fsUnl = setTimeout(() => b.classList.add("hidden"), 2800);
+    }
+    function openFsDrawer(type) {
+      clearTimeout(window.__fsHudT);
+      const card = document.getElementById("fsDrawerCard");
+      const item = cfg.catalog.find(c => c.id === app.watch.itemId);
+      if (type === "speed") {
+        card.innerHTML = `<p class="font-extrabold text-sm">Kecepatan Putar</p><div class="grid grid-cols-3 gap-2">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button type="button" onclick="app.watch.speed=${s}; document.getElementById('watchVideo').playbackRate=${s}; document.getElementById('fsSpeedLbl').textContent='${s}x'; closeFsDrawer();" class="py-2.5 rounded-xl font-bold ${app.watch.speed===s?"bg-white text-black":"bg-white/10 text-white"}">${s}x</button>`).join("")}</div>`;
+      } else if (type === "episodes" && item) {
+        const eps = item.seasons[app.watch.sIdx].episodes || [];
+        card.innerHTML = `<p class="font-extrabold text-sm">Daftar Episode</p><div class="space-y-2">${eps.map((ep, idx)=>`<button type="button" onclick="closeFsDrawer(); openWatchScreen('${esc(item.id)}', ${app.watch.sIdx}, ${idx}); openFullscreenCinema();" class="w-full text-left p-2.5 rounded-xl ${idx===app.watch.epIdx?"bg-bsBlue text-white":"bg-white/10 text-zinc-200"} font-bold">Eps ${ep.ep}: ${esc(ep.title)}</button>`).join("")}</div>`;
+      } else if (type === "audioSub") {
+        card.innerHTML = `<p class="font-extrabold text-sm">Dual Subtitle (.ass/.srt/.vtt)</p>
+          <div class="grid grid-cols-2 gap-2">${[["dual","Dual (ID+AR)"],["id","Indo Saja"],["ar","Arab Saja"],["off","Nonaktif"]].map(([k,l])=>`<button type="button" onclick="app.watch.subMode='${k}'; paintDualSubs(app.watch.demoSec); closeFsDrawer();" class="py-2 rounded-xl font-bold ${app.watch.subMode===k?"bg-bsBlue text-white":"bg-white/10 text-zinc-200"}">${l}</button>`).join("")}</div>
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+            <label class="py-2 rounded-xl bg-white/15 text-center font-bold cursor-pointer">📤 Upload Sub ID<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'id')" class="hidden"/></label>
+            <label class="py-2 rounded-xl bg-amber-500/25 text-amber-300 text-center font-bold cursor-pointer">📤 Upload Sub AR<input type="file" accept=".ass,.ssa,.srt,.vtt,.sbv,.sub,.txt" onchange="uploadLocalSub(event,'ar')" class="hidden"/></label>
+          </div>`;
+      }
+      document.getElementById("fsDrawerBd").classList.remove("hidden");
+    }
+    function closeFsDrawer() { document.getElementById("fsDrawerBd").classList.add("hidden"); showFsHud(); }
+    function uploadLocalSub(evt, lang) {
+      const f = evt.target.files && evt.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = () => { app.watch.customSubs[lang] = parseUniversalSub(r.result, f.name); toast(`Subtitle ${lang.toUpperCase()} dimuat!`); closeFsDrawer(); };
+      r.readAsText(f, "UTF-8");
+    }
+    function playNextEpisode() {
+      const item = cfg.catalog.find(c => c.id === app.watch.itemId);
+      const eps = item && item.seasons[app.watch.sIdx] && item.seasons[app.watch.sIdx].episodes;
+      if (eps && app.watch.epIdx + 1 < eps.length) {
+        const wasFs = app.watch.isFs;
+        openWatchScreen(item.id, app.watch.sIdx, app.watch.epIdx + 1);
+        if (wasFs) openFullscreenCinema();
+      } else toast("Sudah di episode terakhir.");
+    }
+
+    /* =========================================================================
+       7. AUTH, FAVORITES, VIP CHECKOUT, BACKEND APPS SCRIPT SYNC
+       ========================================================================= */
+    function closeOverlay(id) { const el = document.getElementById(id); if (el) el.classList.add("hidden"); }
+    function openLoginSheet() { document.getElementById("loginSheet").classList.remove("hidden"); }
+    function openQuickActionSheet() { document.getElementById("quickActionSheet").classList.remove("hidden"); }
+
+    function quickSocialLogin(provider) {
+      if (!document.getElementById("loginAgeCheck").checked) { toast("Centang persetujuan usia 17+ terlebih dahulu."); return; }
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      app.user = { email: `member${rand}@animedubar.app`, displayName: `Akun Animedubar_${rand}`, provider, isVipActive: hasVip() };
+      saveObj(STORE_KEY + "_user", app.user);
+      closeOverlay("loginSheet");
+      renderProfileScreen();
+      toast(`Berhasil masuk dengan ${provider}!`);
+    }
+
+    async function submitBackendLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmailInp").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassInp").value;
+      if (cfg.backendWebAppUrl) {
+        try {
+          const data = await gasPost("/api/auth/login", { email, password });
+          app.user = Object.assign({}, data.user, { token: data.token });
+          saveObj(STORE_KEY + "_user", app.user);
+          closeOverlay("loginSheet");
+          renderProfileScreen();
+          toast("Login server berhasil!");
+          return;
+        } catch (err) { toast("Login gagal: " + err.message); return; }
+      }
+      app.user = { email, displayName: email.split("@")[0], isVipActive: hasVip() };
+      saveObj(STORE_KEY + "_user", app.user);
+      closeOverlay("loginSheet");
+      renderProfileScreen();
+      toast("Masuk di mode lokal (atur URL Apps Script di Pengaturan untuk sync server).");
+    }
+
+    function toggleFavorite(id) {
+      if (app.favorites.includes(id)) { app.favorites = app.favorites.filter(x => x !== id); toast("Dihapus dari Favorit Saya."); }
+      else { app.favorites.unshift(id); toast("Ditambahkan ke Favorit Saya!"); }
+      saveObj(STORE_KEY + "_fav", app.favorites);
+      if (app.watch.itemId === id) renderWatchInfoPane();
+      if (app.navTab === "profile") renderProfileScreen();
+    }
+    function toggleLike(id) {
+      if (app.likes.includes(id)) app.likes = app.likes.filter(x => x !== id);
+      else app.likes.push(id);
+      saveObj(STORE_KEY + "_likes", app.likes);
+      renderWatchInfoPane();
+    }
+    function shareCurrentItem(title) {
+      if (navigator.share) navigator.share({ title: "Animedubar", text: `Nonton ${title} (Dub Arab + Dual Sub) di Animedubar!` }).catch(()=>{});
+      else toast("Judul disalin! Bagikan Animedubar ke teman Anda.");
+    }
+
+    function openVipSheet(tab = "pay") {
+      document.getElementById("vipSheet").classList.remove("hidden");
+      renderVipPlans();
+      switchVipTab(tab);
+    }
+    function switchVipTab(t) {
+      document.getElementById("vTabPay").className = t === "pay" ? "py-2 rounded-lg bg-white text-[#18191C] shadow-sm" : "py-2 rounded-lg text-[#61666D]";
+      document.getElementById("vTabVoucher").className = t === "voucher" ? "py-2 rounded-lg bg-white text-[#18191C] shadow-sm" : "py-2 rounded-lg text-[#61666D]";
+      document.getElementById("vipPanePay").classList.toggle("hidden", t !== "pay");
+      document.getElementById("vipPaneVoucher").classList.toggle("hidden", t !== "voucher");
+    }
+    function renderVipPlans() {
+      document.getElementById("vipPlansGrid").innerHTML = (cfg.vipPlans || []).map(p => `
+        <button type="button" onclick="app.selectedPlanId='${p.id}'; renderVipPlans();" class="p-3 rounded-xl border-2 text-left relative ${app.selectedPlanId===p.id ? "border-bsPink bg-[#FFF5F8]" : "border-gray-200 bg-white"}">
+          ${p.popular ? `<span class="absolute -top-2 right-1.5 px-1.5 py-0.5 rounded bg-bsPink text-white text-[8px] font-black">LARIS</span>` : ""}
+          <p class="text-[11px] font-bold text-[#61666D]">${esc(p.name)}</p>
+          <p class="text-[14px] font-black text-[#18191C] mt-0.5">${esc(p.price)}</p>
+          <p class="text-[10px] text-[#9499A0]">${esc(p.duration)}</p>
+        </button>`).join("");
+    }
+    function selectPayMethod(m) {
+      app.payMethod = m;
+      document.getElementById("payMethodQris").className = m === "QRIS" ? "py-2.5 rounded-xl border-2 border-bsPink bg-[#FFF0F5] text-bsPink" : "py-2.5 rounded-xl border border-gray-200 text-[#61666D]";
+      document.getElementById("payMethodTf").className = m === "BANK_TRANSFER" ? "py-2.5 rounded-xl border-2 border-bsPink bg-[#FFF0F5] text-bsPink" : "py-2.5 rounded-xl border border-gray-200 text-[#61666D]";
+    }
+    async function createVipInvoice() {
+      const plan = cfg.vipPlans.find(p => p.id === app.selectedPlanId) || cfg.vipPlans[0];
+      let invNo = "INV-ADBR-" + Date.now();
+      let amount = plan.amount || 29000;
+      if (cfg.backendWebAppUrl) {
+        try {
+          const r = await gasPost("/api/payments/checkout", { planCode: "vip-" + plan.id, method: app.payMethod, userEmail: (app.user && app.user.email) || "guest@animedubar" });
+          if (r.invoice) { invNo = r.invoice.invoice_number; amount = r.invoice.payable_amount_idr || r.invoice.final_amount_idr; }
+        } catch (err) { toast("Server checkout: " + err.message); }
+      }
+      const box = document.getElementById("vipInvoiceBox");
+      box.classList.remove("hidden");
+      box.innerHTML = `
+        <div class="flex justify-between font-bold"><span>Invoice</span><span class="font-mono text-[#00AEEC]">${esc(invNo)}</span></div>
+        <div class="flex justify-between font-bold"><span>Total Bayar</span><span class="text-bsPink">Rp ${Number(amount).toLocaleString("id-ID")}</span></div>
+        ${app.payMethod === "QRIS" ? `<div class="text-center py-2"><img src="${cfg.qrisImageUrl || ("https://api.qrserver.com/v1/create-qr-code/?size=160x160&data="+encodeURIComponent(invNo))}" class="w-40 h-40 mx-auto rounded-xl bg-white p-1.5 border"/></div>` : `<div class="p-2.5 rounded-xl bg-white border border-gray-200 space-y-1"><p>Bank: <strong>${esc(cfg.bankName)}</strong></p><p>No. Rek: <strong class="font-mono">${esc(cfg.bankAccountNumber)}</strong></p><p>A/N: <strong>${esc(cfg.bankAccountHolder)}</strong></p></div>`}
+        <button type="button" onclick="openWhatsAppAdmin('Halo Admin Animedubar, saya sudah bayar invoice ${esc(invNo)} (${esc(plan.name)}) sebesar Rp ${amount}.')" class="w-full py-2.5 rounded-full bg-emerald-500 text-white font-extrabold">Konfirmasi Pembayaran via WA</button>`;
+    }
+
+    async function redeemVipVoucher(e) {
+      e.preventDefault();
+      const code = document.getElementById("voucherCodeInp").value.trim().toUpperCase();
+      if (cfg.backendWebAppUrl) {
+        try {
+          const r = await gasPost("/api/vouchers/redeem", { code });
+          app.voucher = { code: r.code, planName: r.planName, expiresAt: Date.parse(r.expiresAt) || (Date.now() + 30*86400000) };
+          saveObj(STORE_KEY + "_voucher", app.voucher);
+          closeOverlay("vipSheet");
+          renderProfileScreen();
+          toast("Selamat! Premium VIP Aktif!");
+          return;
+        } catch (err) { toast(err.message); return; }
+      }
+      const found = (cfg.vouchers || []).find(v => v.code.toUpperCase() === code && v.status === "ACTIVE");
+      if (!found) { toast("Kode voucher tidak valid."); return; }
+      app.voucher = { code: found.code, planName: found.planName, expiresAt: Date.now() + found.durationDays * 86400000 };
+      saveObj(STORE_KEY + "_voucher", app.voucher);
+      closeOverlay("vipSheet");
+      renderProfileScreen();
+      toast(`Selamat! ${found.planName} aktif!`);
+    }
+
+    function openWhatsAppAdmin(msg) {
+      const wa = String(cfg.whatsappNumber || "6281234567890").replace(/[^0-9]/g, "");
+      window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    async function openDownloadsSheet() {
+      const list = await vaultAll();
+      document.getElementById("listModalTitle").textContent = `Unduhan Saya (${list.length} Episode · In-App)`;
+      document.getElementById("listModalBody").innerHTML = list.length ? list.map(v => `
+        <div class="p-3 rounded-xl bg-[#F4F5F7] flex items-center justify-between gap-2">
+          <div onclick="closeOverlay('listModalSheet'); openWatchScreen('${esc(v.itemId)}', ${v.sIdx}, ${v.epIdx});" class="cursor-pointer min-w-0 flex-1">
+            <p class="font-bold text-[#18191C] truncate">${esc(v.title)} · E${v.ep}</p>
+            <p class="text-[11px] text-[#00AEEC] truncate">🔒 Terenkripsi dalam APK · ${esc(v.epTitle)}</p>
+          </div>
+          <button type="button" onclick="deleteVaultKey('${esc(v.key)}')" class="px-2.5 py-1 rounded-lg bg-red-100 text-red-600 font-bold">Hapus</button>
+        </div>`).join("") : `<p class="py-10 text-center text-[#9499A0]">Belum ada episode yang diunduh di dalam aplikasi.</p>`;
+      document.getElementById("listModalSheet").classList.remove("hidden");
+    }
+
+    function openFavoritesSheet() {
+      const items = cfg.catalog.filter(c => app.favorites.includes(c.id));
+      document.getElementById("listModalTitle").textContent = `Favorit Saya (${items.length})`;
+      document.getElementById("listModalBody").innerHTML = items.length ? items.map(it => `
+        <div onclick="closeOverlay('listModalSheet'); openWatchScreen('${esc(it.id)}', 0, 0);" class="flex gap-3 p-2 rounded-xl bg-[#F4F5F7] cursor-pointer">
+          <div class="w-24 aspect-video rounded-lg overflow-hidden shrink-0">${artHtml(it, true)}</div>
+          <div class="min-w-0 flex-1"><p class="font-bold text-[#18191C] line-clamp-2">${esc(it.title)}</p><p class="text-[11px] text-[#61666D] mt-0.5">${esc(it.arabicTitle || "")}</p></div>
+        </div>`).join("") : `<p class="py-10 text-center text-[#9499A0]">Belum ada anime favorit.</p>`;
+      document.getElementById("listModalSheet").classList.remove("hidden");
+    }
+
+    function openHistoryListSheet() {
+      document.getElementById("listModalTitle").textContent = "Riwayat Tontonan";
+      document.getElementById("listModalBody").innerHTML = (app.history || []).map(h => {
+        const it = cfg.catalog.find(c => c.id === h.itemId);
+        return it ? `<div onclick="closeOverlay('listModalSheet'); openWatchScreen('${esc(it.id)}', ${h.sIdx||0}, ${h.epIdx||0});" class="flex gap-3 p-2 rounded-xl bg-[#F4F5F7] cursor-pointer"><div class="w-24 aspect-video rounded-lg overflow-hidden shrink-0">${artHtml(it, true)}</div><div class="min-w-0 flex-1"><p class="font-bold text-[#18191C] truncate">${esc(it.title)}</p><p class="text-[11px] text-[#00AEEC]">Episode ${(h.epIdx||0)+1}</p></div></div>` : "";
+      }).join("") || `<p class="py-10 text-center text-[#9499A0]">Belum ada riwayat.</p>`;
+      document.getElementById("listModalSheet").classList.remove("hidden");
+    }
+
+    function openBackendSettingsModal() {
+      document.getElementById("listModalTitle").textContent = "Pengaturan Aplikasi &amp; Server";
+      document.getElementById("listModalBody").innerHTML = `
+        <form onsubmit="saveAppSettings(event)" class="space-y-3">
+          <div>
+            <label class="block font-bold text-[#18191C] mb-1">URL Backend Google Apps Script</label>
+            <input id="setGasUrl" type="url" value="${esc(cfg.backendWebAppUrl || "")}" placeholder="https://script.google.com/macros/s/.../exec" class="w-full h-10 rounded-xl border border-gray-300 px-3 font-mono text-[11px]" />
+          </div>
+          <div>
+            <label class="block font-bold text-[#18191C] mb-1">OneSignal App ID (Push Notification)</label>
+            <input id="setOsId" type="text" value="${esc(cfg.oneSignalAppId || "")}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" class="w-full h-10 rounded-xl border border-gray-300 px-3 font-mono text-[11px]" />
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-full bg-bsBlue text-white font-extrabold">Simpan &amp; Sinkronkan Server</button>
+        </form>`;
+      document.getElementById("listModalSheet").classList.remove("hidden");
+    }
+
+    async function saveAppSettings(e) {
+      e.preventDefault();
+      cfg.backendWebAppUrl = document.getElementById("setGasUrl").value.trim().replace(/\/+$/, "");
+      cfg.oneSignalAppId = document.getElementById("setOsId").value.trim();
+      saveObj(STORE_KEY + "_cfg", { backendWebAppUrl: cfg.backendWebAppUrl, oneSignalAppId: cfg.oneSignalAppId });
+      closeOverlay("listModalSheet");
+      initOneSignalPush();
+      await syncFromBackend(false);
+    }
+
+    async function gasPost(path, body = {}) {
+      const base = String(cfg.backendWebAppUrl || "").trim().replace(/\/+$/, "");
+      if (!base) throw new Error("URL Backend belum diatur");
+      const res = await fetch(base, {
+        method: "POST", redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ path, method: "POST", token: (app.user && app.user.token) || "", body })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.ok === false) throw new Error(data.error || "Server Error");
+      return data;
+    }
+
+    async function syncFromBackend(silent = true) {
+      if (!cfg.backendWebAppUrl) return;
+      try {
+        const boot = await gasPost("/api/bootstrap", {});
+        if (Array.isArray(boot.catalog) && boot.catalog.length > 0) {
+          const epMap = new Map();
+          (boot.episodes || []).forEach(e => {
+            const cid = String(e.contentId || "").trim(); if (!cid) return;
+            if (!epMap.has(cid)) epMap.set(cid, []);
+            epMap.get(cid).push({
+              ep: Number(e.epNumber || 1), title: e.title || "Episode", duration: e.duration || "24:00",
+              isVip: String(e.isVip).toUpperCase() === "TRUE",
+              driveSubId: e.gdriveSubId || "DEMO", driveSubAr: e.gdriveSubAr || e.gdriveSubId || "DEMO",
+              driveDual: e.gdriveDualSub || e.gdriveSubId || "DEMO",
+              hlsUrl: e.hlsUrl || "", subIdUrl: e.subIdUrl || "", subArUrl: e.subArUrl || "",
+              subIdText: e.subIdText || "", subArText: e.subArText || ""
+            });
+          });
+          cfg.catalog = boot.catalog.map((c, idx) => ({
+            id: c.id || ("item-" + idx),
+            title: c.title || "Judul Baru",
+            arabicTitle: c.titleAr || "",
+            type: String(c.type || "anime").toLowerCase().includes("movie") ? "movie" : "anime",
+            year: Number(c.year || 2026),
+            rating: String(c.rating || "9.2"),
+            views: String(c.viewsCount || "12.5K"),
+            likes: 180 + idx * 35,
+            topRank: Number(c.top10Rank || idx + 1),
+            isVip: String(c.isVip).toUpperCase() === "TRUE",
+            channel: c.studio || "Animedubar Official",
+            genres: String(c.genres || "Anime, Dub Arab").split(",").map(s => s.trim()).filter(Boolean),
+            posterUrl: c.poster || "",
+            backdropUrl: c.backdrop || "",
+            theme: { c1: "#1d4ed8", c2: "#0f172a" },
+            synopsis: c.synopsis || "",
+            seasons: [{ seasonNumber: 1, title: "S1", episodes: (epMap.get(c.id) || [{ ep: 1, title: "Episode 1", duration: "24:00", isVip: false, driveSubId: "DEMO" }]).sort((a,b) => a.ep - b.ep) }]
+          }));
+        }
+        if (Array.isArray(boot.settings)) {
+          boot.settings.forEach(s => {
+            if (s.key === "whatsapp") cfg.whatsappNumber = s.value;
+            if (s.key === "qrisImageUrl") cfg.qrisImageUrl = s.value;
+            if (s.key === "bankName") cfg.bankName = s.value;
+            if (s.key === "bankAccountNumber") cfg.bankAccountNumber = s.value;
+            if (s.key === "bankAccountHolder") cfg.bankAccountHolder = s.value;
+          });
+        }
+        if (Array.isArray(boot.notifications) && boot.notifications.length) {
+          const readSet = new Set((app.notifs || []).filter(x => x.read).map(x => x.id));
+          app.notifs = boot.notifications.map(n => ({
+            id: n.id, category: n.category || "SISTEM", title: n.title, body: n.body,
+            read: readSet.has(n.id), createdAt: Date.parse(n.createdAt) || Date.now()
+          }));
+          saveObj(STORE_KEY + "_notifs", app.notifs);
+        }
+        updateUnreadBadges();
+        if (app.navTab === "home") renderHomeFeed();
+        if (app.navTab === "search") renderSearchScreen();
+        if (app.navTab === "messages") renderMessagesScreen();
+        if (!silent) toast("Berhasil sinkronisasi katalog terbaru!");
+      } catch (err) {
+        if (!silent) toast("Sync gagal: " + err.message);
+      }
+    }
+
+    /* =========================================================================
+       8. BOOTSTRAP
+       ========================================================================= */
+    window.addEventListener("load", () => {
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      updateUnreadBadges();
+      renderHomeFeed();
+      if (!app.privacyAccepted) {
+        document.getElementById("privacyModal").classList.remove("hidden");
+      } else {
+        initOneSignalPush();
+      }
+      syncFromBackend(true);
+      setInterval(() => syncFromBackend(true), Math.max(15, Number(cfg.notifPollSeconds || 45)) * 1000);
+    });
+  </script>
+</body>
+</html>

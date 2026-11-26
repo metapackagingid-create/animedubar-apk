@@ -1,0 +1,18 @@
+{
+  "name": "animedubar-mobile-apk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Animedubar Android APK \u2014 GitHub Actions Cloud Build + OneSignal Push Aktif Penuh",
+  "scripts": {
+    "cap:sync": "npx cap sync android",
+    "configure:android": "node scripts/configure-android.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/screen-orientation": "^6.0.1",
+    "@capacitor/status-bar": "^6.0.1",
+    "onesignal-cordova-plugin": "^5.2.10"
+  }
+}
